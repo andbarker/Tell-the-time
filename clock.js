@@ -26,27 +26,38 @@ function clockFaceSVG() {
         const y1 = CLOCK_CY - outerR * Math.cos(rad);
         const x2 = CLOCK_CX + innerR * Math.sin(rad);
         const y2 = CLOCK_CY - innerR * Math.cos(rad);
-        ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${isHour ? '#4453D6' : '#C7CBF5'}" stroke-width="${isHour ? 3 : 1.5}" stroke-linecap="round"/>`;
+        ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${isHour ? '#7C4DFF' : '#CFC3FF'}" stroke-width="${isHour ? 3.5 : 1.5}" stroke-linecap="round"/>`;
     }
     let numbers = "";
     for (let i = 1; i <= 12; i++) {
         const angle = i * 30;
         const rad = angle * Math.PI / 180;
-        const r = CLOCK_R - 26;
+        const r = CLOCK_R - 27;
         const x = CLOCK_CX + r * Math.sin(rad);
         const y = CLOCK_CY - r * Math.cos(rad);
-        numbers += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="800" fill="#33344A">${i}</text>`;
+        numbers += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="23" font-weight="700" fill="#3B2E5A" class="clock-num">${i}</text>`;
     }
+    // The two hands differ by colour AND by shape — the hour hand is a stubby
+    // tapered wedge, the minute hand a long thin pointer — so they stay tellable
+    // apart at small sizes and for colour-blind children.
+    const hourHand = `M ${CLOCK_CX - 7} ${CLOCK_CY + 10}
+                      L ${CLOCK_CX - 4.5} ${CLOCK_CY - 46}
+                      L ${CLOCK_CX} ${CLOCK_CY - 52}
+                      L ${CLOCK_CX + 4.5} ${CLOCK_CY - 46}
+                      L ${CLOCK_CX + 7} ${CLOCK_CY + 10} Z`;
     return `
     <svg viewBox="0 0 220 220" width="100%" height="100%" class="clock-svg">
-        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R}" fill="#FFFFFF" stroke="#DFE1FA" stroke-width="4"/>
-        <path class="hour-space" d="" fill="#FFD79B" opacity="0"/>
+        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R + 6}" fill="#FFD166"/>
+        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R + 2}" fill="#FFF9EC"/>
+        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R}" fill="#FFFFFF"/>
+        <path class="hour-space" d="" fill="#8ED9A0" opacity="0"/>
         ${ticks}
         ${numbers}
-        <line class="hour-hand" x1="${CLOCK_CX}" y1="${CLOCK_CY}" x2="${CLOCK_CX}" y2="${CLOCK_CY - 48}" stroke="#33344A" stroke-width="7" stroke-linecap="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
-        <line class="minute-hand" x1="${CLOCK_CX}" y1="${CLOCK_CY}" x2="${CLOCK_CX}" y2="${CLOCK_CY - 78}" stroke="#5B6EF5" stroke-width="5" stroke-linecap="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
-        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="7" fill="#FF9F1C"/>
-        <circle class="drag-target" cx="${CLOCK_CX}" cy="${CLOCK_CY - 78}" r="12" fill="transparent"/>
+        <path class="hour-hand" d="${hourHand}" fill="#E5484D" stroke="#B4262B" stroke-width="2" stroke-linejoin="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
+        <line class="minute-hand" x1="${CLOCK_CX}" y1="${CLOCK_CY + 14}" x2="${CLOCK_CX}" y2="${CLOCK_CY - 84}" stroke="#2563EB" stroke-width="4.5" stroke-linecap="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
+        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="8" fill="#3B2E5A"/>
+        <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="3.5" fill="#FFD166"/>
+        <circle class="drag-target" cx="${CLOCK_CX}" cy="${CLOCK_CY - 84}" r="14" fill="transparent"/>
     </svg>`;
 }
 

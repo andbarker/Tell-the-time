@@ -10,6 +10,7 @@
     const LEVELS = [
         {
             id: 1, emoji: "👉", title: "Just the Hour Hand", desc: "Meet the short hand!",
+            badge: { icon: "🔎", name: "Hand Spotter", color: "#F97316" },
             minuteSet: [0], curriculum: "Year 1",
             hourHandOnly: true,
             teachTitle: "The hour hand lives in a space! 👉",
@@ -23,6 +24,7 @@
         },
         {
             id: 2, emoji: "🕐", title: "O'Clock", desc: "Both hands together!",
+            badge: { icon: "🕐", name: "O'Clock Ace", color: "#7C4DFF" },
             minuteSet: [0], curriculum: "Year 1",
             teachTitle: "Now the long hand joins in! 🕐",
             teachHour: 3, teachMinute: 0,
@@ -34,6 +36,7 @@
         },
         {
             id: 3, emoji: "🕡", title: "Half Past", desc: "Halfway there!",
+            badge: { icon: "🌗", name: "Half Past Hero", color: "#0EA5E9" },
             minuteSet: [0, 30], curriculum: "Year 1",
             teachTitle: "Half past means halfway round! 🕡",
             teachHour: 3, teachMinute: 30,
@@ -45,6 +48,7 @@
         },
         {
             id: 4, emoji: "🕒", title: "Quarter Past & To", desc: "Say it with words!",
+            badge: { icon: "🍕", name: "Quarter Champ", color: "#EC4899" },
             minuteSet: [0, 15, 30, 45], curriculum: "Year 2",
             teachTitle: "Quarter past and quarter to! 🕒",
             teachHour: 3, teachMinute: 15,
@@ -56,6 +60,7 @@
         },
         {
             id: 5, emoji: "🕔", title: "Five Minutes", desc: "Count by 5s!",
+            badge: { icon: "🖐️", name: "High Five Counter", color: "#2FBF71" },
             minuteSet: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], curriculum: "Year 3",
             teachTitle: "Let's count by 5s around the clock! 🕔",
             teachHour: 3, teachMinute: 20,
@@ -67,6 +72,7 @@
         },
         {
             id: 6, emoji: "🕓", title: "Any Minute", desc: "Every tick counts!",
+            badge: { icon: "🔬", name: "Minute Detective", color: "#F59E0B" },
             minuteSet: Array.from({ length: 60 }, (_, i) => i), curriculum: "Year 3",
             teachTitle: "Time to read every single minute! 🕓",
             teachHour: 3, teachMinute: 23,
@@ -78,6 +84,7 @@
         },
         {
             id: 7, emoji: "🏆", title: "Time Master", desc: "The big challenge!",
+            badge: { icon: "👑", name: "Time Master", color: "#EAB308" },
             minuteSet: "mixed", curriculum: "Year 3",
             teachTitle: "You're ready — show us what you know! 🏆",
             teachHour: 7, teachMinute: 45,
@@ -311,8 +318,41 @@
     }
 
     // ---------- Home / level select ----------
+    function renderBadgeShelf() {
+        const shelf = $("#badge-shelf");
+        if (!shelf) return;
+        const earned = LEVELS.filter(l => starsFor(l.id) >= 1);
+        shelf.innerHTML = `
+            <div class="badge-shelf-title">My badges <span>${earned.length}/${LEVELS.length}</span></div>
+            <div class="badge-shelf-row">
+                ${LEVELS.map(l => {
+                    const got = starsFor(l.id) >= 1;
+                    return `<div class="badge-chip ${got ? "earned" : "locked"}"
+                                 style="${got ? `--badge-color:${l.badge.color}` : ""}"
+                                 title="${got ? l.badge.name : "Not won yet"}">
+                                <span class="badge-chip-icon">${got ? l.badge.icon : "🔒"}</span>
+                                <span class="badge-chip-name">${got ? l.badge.name : "???"}</span>
+                            </div>`;
+                }).join("")}
+            </div>`;
+    }
+
+    function resetProgress() {
+        const ok = window.confirm(
+            "Start over?\n\nThis clears all stars and badges so you can begin again from the very first level."
+        );
+        if (!ok) return;
+        progress = { levels: {}, totalStars: 0, seenTeach: {}, schema: 2 };
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+        renderHome();
+        showScreen("screen-home");
+    }
+
     function renderHome() {
         updateNavStars();
+        renderBadgeShelf();
+        const resetBtn = $("#btn-reset");
+        if (resetBtn) resetBtn.onclick = resetProgress;
         const grid = $("#level-grid");
         grid.innerHTML = "";
         LEVELS.forEach(level => {
@@ -390,9 +430,11 @@
         }
         const hour = randInt(1, 12);
         if (type === "hourspace") {
-            // Drift the hour hand through its hour — the late positions (nearly at the
-            // next number) are exactly the ones children misread, so weight them in.
-            return { hour, minute: pick([0, 10, 20, 25, 35, 40, 50, 55]), minuteSet: [0] };
+            // Drift the hour hand through its hour. Late positions are the ones
+            // children misread, so they earn their place — but past ~40 minutes the
+            // hand sits within a few degrees of the next number and nobody, adult or
+            // child, can fairly call it. Capped so every question is actually decidable.
+            return { hour, minute: pick([0, 5, 15, 20, 30, 35, 40]), minuteSet: [0] };
         }
         // Reading to the exact minute is fair, but *dragging* to one minute out of 60
         // is far too fiddly for small fingers — so questions that ask the child to set
@@ -735,9 +777,20 @@
         }
         updateNavStars();
 
-        $("#complete-title").textContent = `${level.emoji} ${level.title} complete!`;
+        // The badge is the keepsake for finishing a level — it lands on the home shelf.
+        const isNewBadge = prevStars === 0;
+        const disc = $("#badge-won-disc");
+        disc.textContent = level.badge.icon;
+        disc.style.background = level.badge.color;
+        $("#badge-won-label").textContent = isNewBadge
+            ? `${level.badge.name} badge won!`
+            : `${level.badge.name}`;
+        $("#badge-won").classList.toggle("is-new", isNewBadge);
+
+        $("#complete-title").textContent = `${level.title} complete!`;
         const finalStars = Math.max(stars, prevStars);
-        $("#complete-stars").innerHTML = [1, 2, 3].map(n => `<span>${n <= finalStars ? "⭐" : "☆"}</span>`).join("");
+        $("#complete-stars").innerHTML = [1, 2, 3]
+            .map(n => `<span class="${n <= finalStars ? "" : "dim"}">⭐</span>`).join("");
         const messages = [
             "You're doing brilliantly!", "Look at you go!", "So proud of that effort!",
             "You're really getting the hang of clocks!"

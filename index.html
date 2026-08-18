@@ -12,6 +12,10 @@
     <meta name="theme-color" content="#5B6EF5">
     <link rel="manifest" href="./manifest.json">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -30,10 +34,17 @@
         <!-- HOME / LEVEL SELECT -->
         <section id="screen-home" class="screen">
             <div class="hero">
-                <h1>Ready to become a Clock Superstar? 🕐⭐</h1>
-                <p>Pick a level, solve fun clock puzzles, and collect stars as you go. Let's get started!</p>
+                <h1>Become a Clock Superstar!</h1>
+                <p>Play the levels, collect stars, and win a badge for every one you finish.</p>
             </div>
+
+            <div class="badge-shelf" id="badge-shelf"></div>
+
             <div class="level-grid" id="level-grid"></div>
+
+            <div class="reset-row">
+                <button class="btn-reset" id="btn-reset">Start over</button>
+            </div>
         </section>
 
         <!-- TEACH / LEARN SCREEN -->
@@ -112,6 +123,10 @@
         <!-- LEVEL COMPLETE SCREEN -->
         <section id="screen-complete" class="screen">
             <div class="panel complete-screen">
+                <div class="badge-won" id="badge-won">
+                    <div class="badge-won-disc" id="badge-won-disc"></div>
+                    <div class="badge-won-label" id="badge-won-label"></div>
+                </div>
                 <h2 id="complete-title"></h2>
                 <div class="complete-stars" id="complete-stars"></div>
                 <p id="complete-msg" style="font-size: 1.2rem;"></p>
