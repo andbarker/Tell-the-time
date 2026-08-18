@@ -427,6 +427,90 @@ h2 { font-size: 1.7rem; }
 /* Hour-space wedge fades in when it's used to explain a mistake */
 .hour-space { transition: opacity 0.35s ease; }
 
+/* ---------- Tick, the mascot ---------- */
+.mascot { width: 100%; height: 100%; display: block; overflow: visible; }
+.mascot-arm { transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Every expression ships in the markup; the mood class picks one. */
+.mascot .mascot-eyes,
+.mascot .mascot-mouth,
+.mascot .mascot-brows { display: none; }
+
+.mascot.mood-idle .mascot-eyes-open,
+.mascot.mood-idle .mascot-mouth-idle,
+.mascot.mood-thinking .mascot-eyes-open,
+.mascot.mood-thinking .mascot-mouth-thinking,
+.mascot.mood-thinking .mascot-brows,
+.mascot.mood-happy .mascot-eyes-glad,
+.mascot.mood-happy .mascot-mouth-happy,
+.mascot.mood-oops .mascot-eyes-wide,
+.mascot.mood-oops .mascot-mouth-oops,
+.mascot.mood-oops .mascot-brows,
+.mascot.mood-cheer .mascot-eyes-glad,
+.mascot.mood-cheer .mascot-mouth-cheer { display: block; }
+
+/* Thinking: brows tilt and the eyes drift aside */
+.mascot.mood-thinking .mascot-brow-r { transform: translateY(-3px); }
+.mascot.mood-thinking .mascot-pupil { transform: translate(4px, -2px); }
+/* Oops: brows pull inward */
+.mascot.mood-oops .mascot-brow-l { transform: translate(4px, 6px) rotate(12deg); transform-origin: 78px 64px; }
+.mascot.mood-oops .mascot-brow-r { transform: translate(-4px, 6px) rotate(-12deg); transform-origin: 122px 64px; }
+
+.mascot.mood-happy { animation: mascotHop 0.6s ease; }
+.mascot.mood-cheer { animation: mascotCheer 0.9s ease; }
+.mascot.mood-oops { animation: mascotWobble 0.5s ease; }
+
+@keyframes mascotHop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-12px); }
+    70% { transform: translateY(-4px); }
+}
+@keyframes mascotCheer {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-16px) rotate(-6deg); }
+    60% { transform: translateY(-8px) rotate(5deg); }
+}
+@keyframes mascotWobble {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+/* Placements */
+.teach-intro {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+}
+.mascot-slot-teach { width: 130px; flex: 0 0 auto; }
+.mascot-slot-quiz {
+    width: 62px; height: 62px;
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+.mascot-slot-complete { width: 150px; margin: 0 auto var(--spacing-sm); }
+
+/* A speech bubble so the mascot can carry the encouragement line */
+.mascot-say {
+    position: relative;
+    background: var(--purple-wash);
+    border-radius: 16px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--purple-dark);
+    max-width: 210px;
+}
+.mascot-say::after {
+    content: "";
+    position: absolute;
+    left: -8px; top: 18px;
+    border: 8px solid transparent;
+    border-right-color: var(--purple-wash);
+    border-left: 0;
+}
+
 /* Set-the-clock drag mode */
 .set-clock-target { text-align: center; font-size: 2rem; font-weight: 700; color: var(--purple-dark); margin-bottom: var(--spacing-sm); }
 .drag-hint { text-align: center; color: var(--ink-soft); margin-bottom: var(--spacing-md); font-size: 0.95rem; }
@@ -542,6 +626,19 @@ body:not([data-screen="screen-home"]) footer { display: none; }
     outline-offset: 3px;
 }
 
+/* Some children are motion-sensitive. Keep every colour and state cue, drop the
+   movement: no hopping mascot, no falling confetti, no sliding or scaling. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+    .confetti-piece { display: none !important; }
+    .screen.active { animation: none; }
+    .mascot.mood-happy, .mascot.mood-cheer, .mascot.mood-oops { animation: none; }
+}
+
 /* Responsive — triggers on narrow OR short viewports, whichever is tighter,
    so phone-sized screens fit without scrolling */
 @media (max-width: 600px), (max-height: 700px) {
@@ -564,6 +661,11 @@ body:not([data-screen="screen-home"]) footer { display: none; }
     .teach-text p { margin-bottom: var(--spacing-sm); }
     .teach-text .rule { padding: var(--spacing-sm) var(--spacing-md); font-size: 1rem; }
     .sound-btn.hint { width: 42px; height: 42px; font-size: 1.05rem; }
+    .teach-intro { gap: var(--spacing-xs); margin: 0 0 var(--spacing-xs); }
+    .mascot-slot-teach { width: 76px; }
+    .mascot-say { font-size: 0.84rem; padding: 7px 10px; max-width: none; }
+    .mascot-slot-quiz { width: 50px; height: 50px; }
+    .mascot-slot-complete { width: 112px; }
     .answer-grid { gap: var(--spacing-sm); }
     .answer-btn { font-size: 1.1rem; padding: 13px 8px; }
     .clock-choice-grid { gap: var(--spacing-sm); }

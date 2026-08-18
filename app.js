@@ -382,9 +382,23 @@
         showScreen("screen-teach");
     }
 
+    // Lines Tick says on the lesson screen, so the character introduces the level
+    // rather than the page just presenting it.
+    const MASCOT_INTROS = [
+        "Hi! I'm Tick. Let's learn this one together!",
+        "Ooh, my favourite! Watch my arms…",
+        "Ready? I'll show you how this one works!",
+        "This one's fun — follow my arms!"
+    ];
+
     function renderTeach(level) {
         $("#teach-title").textContent = `${level.emoji} ${level.title}`;
         $("#teach-subtitle").textContent = level.teachTitle;
+
+        const teachMascot = $("#teach-mascot");
+        renderMascot(teachMascot, "idle");
+        setMascotPose(teachMascot, "wave");
+        $("#teach-say").textContent = pick(MASCOT_INTROS);
         const clockEl = $("#teach-clock");
         clockEl.innerHTML = "";
         renderClock(clockEl, level.teachHour, level.teachMinute, {
@@ -514,6 +528,7 @@
             streak: 0
         };
         updateStreakBadge();
+        renderMascot($("#quiz-mascot"), "idle");
         renderQuestion();
         showScreen("screen-practice");
     }
@@ -686,6 +701,7 @@
         playCorrectSound();
         confettiBurst(10);
         rewardPopup();
+        flashMascotMood($("#quiz-mascot"), "happy", "idle", 1200);
         showMisconceptionHint(null);
         const firstTry = !session.missedThisQuestion;
         if (firstTry) session.correctFirstTry++;
@@ -696,6 +712,7 @@
     function markWrong(chosen, q) {
         session.missedThisQuestion = true;
         playTryAgainSound();
+        flashMascotMood($("#quiz-mascot"), "oops", "thinking", 1400);
         registerStreak(false);
         showMisconceptionHint(chosen && chosen.why);
         // On an hour-hand slip, light up the hour's space so the child can see the
@@ -822,6 +839,10 @@
         }
         $("#btn-retry-level").onclick = () => startPractice(level.id);
         $("#btn-complete-home").onclick = () => { renderHome(); showScreen("screen-home"); };
+
+        const completeMascot = $("#complete-mascot");
+        renderMascot(completeMascot, "cheer");
+        setMascotPose(completeMascot, "cheer");
 
         showScreen("screen-complete");
         playVictorySound();
