@@ -85,6 +85,10 @@
 
                 <p class="quiz-question" id="quiz-question"></p>
 
+                <!-- Sits above the clock: it's the time you're aiming for, so it has
+                     to be read before the clock, not after it. -->
+                <div class="set-clock-target" id="set-target" style="display:none;"></div>
+
                 <div class="clock-stage">
                     <div class="clock-wrap" id="quiz-clock"></div>
                     <button class="sound-btn hint" id="btn-quiz-speak" title="Hear the time — need help?">🔊</button>
@@ -100,7 +104,6 @@
                 </div>
 
                 <div id="set-area" style="display:none;">
-                    <div class="set-clock-target" id="set-target"></div>
                     <div class="drag-hint">Drag the <b>long blue hand</b> ✋ round the clock, and use the arrows to change the hour.</div>
                     <div class="btn-row" style="margin-top: var(--spacing-sm); margin-bottom: var(--spacing-md);">
                         <button class="btn btn-outline" id="hour-minus">◀ Hour</button>

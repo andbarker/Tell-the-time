@@ -165,11 +165,29 @@
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+    // Screens are ordered, so moving to a later one slides in from the right and
+    // going back slides in from the left — the direction tells the child whether
+    // they're going deeper or coming back out.
+    const SCREEN_ORDER = ["screen-home", "screen-teach", "screen-practice", "screen-complete"];
+    let currentScreen = "screen-home";
+
     function showScreen(id) {
-        $$(".screen").forEach(s => s.classList.remove("active"));
-        $("#" + id).classList.add("active");
+        const from = SCREEN_ORDER.indexOf(currentScreen);
+        const to = SCREEN_ORDER.indexOf(id);
+        const back = to < from;
+        $$(".screen").forEach(s => s.classList.remove("active", "from-right", "from-left"));
+        const el = $("#" + id);
+        el.classList.add("active", back ? "from-left" : "from-right");
+        currentScreen = id;
         document.body.dataset.screen = id;
         window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Tints the current level with its own colour so each one feels distinct.
+    function applyLevelColour(level) {
+        document.documentElement.style.setProperty(
+            "--level-color", (level && level.badge && level.badge.color) || "#7C4DFF"
+        );
     }
 
     // Prefer a warmer, more natural-sounding voice over the default robotic one.
@@ -409,6 +427,7 @@
     // ---------- Teach screen ----------
     function enterLevel(levelId) {
         const level = LEVELS.find(l => l.id === levelId);
+        applyLevelColour(level);
         renderTeach(level);
         showScreen("screen-teach");
     }
@@ -608,6 +627,7 @@
             $("#set-area").style.display = name === "set" ? "" : "none";
             $("#choice-area").style.display = name === "choice" ? "" : "none";
             $(".clock-stage").style.display = name === "choice" ? "none" : "flex";
+            $("#set-target").style.display = name === "set" ? "" : "none";
         };
 
         // Year 2 is the "past / to" language level, so its prompts are worded there too.
@@ -877,8 +897,11 @@
         setMascotPose(completeMascot, "cheer");
 
         showScreen("screen-complete");
-        playVictorySound();
-        confettiBurst(finalStars >= 3 ? 60 : 35);
+        // Staggered so the moment builds — badge lands, then the fanfare, then the
+        // confetti — instead of everything firing at once and reading as noise.
+        setTimeout(() => playVictorySound(), 180);
+        setTimeout(() => confettiBurst(finalStars >= 3 ? 60 : 35), 420);
+        if (finalStars >= 3) setTimeout(() => confettiBurst(30), 900);
     }
 
     // ---------- Init ----------
