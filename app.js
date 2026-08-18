@@ -18,7 +18,7 @@
             teachShowHourSpace: true,
             teachPoints: [
                 "We've hidden the long hand — let's meet the <b>short hour hand</b> on its own.",
-                "The hour hand doesn't jump. It <b>creeps slowly</b> across the orange space all hour long.",
+                "The hour hand doesn't jump. It <b>creeps slowly</b> across the green space all hour long.",
                 "Look! It's nearly at the 4 — but it's still in the <b>3's space</b>, so it's still 3 o'clock. Sneaky! 🤫"
             ]
         },
@@ -111,9 +111,11 @@
         "Awesome work!", "That's exactly right!", "Super job!", "You're getting so good at this!",
         "Woohoo! 🎉", "You're on fire! 🔥", "Clock master move! 🕐", "High five! 🙌"
     ];
+    // Kept free of any mention of a particular hand — the hour-hand level hides the
+    // minute hand, and the targeted hint below already says what to look at.
     const ENCOURAGE_RETRY = [
-        "Not quite — look at the minute hand again!", "Close! Have another look and try again.",
-        "Almost! Check where each hand is pointing.", "Good try — give it one more look!",
+        "Not quite — have another go!", "Close! Take another look and try again.",
+        "Almost there — try once more!", "Good try — give it one more look!",
         "Nearly there — you can do this!", "So close! You've got this — try again! 💪"
     ];
 
@@ -558,8 +560,7 @@
             $("#mcq-area").style.display = name === "mcq" ? "" : "none";
             $("#set-area").style.display = name === "set" ? "" : "none";
             $("#choice-area").style.display = name === "choice" ? "" : "none";
-            $(".clock-stage").style.display = name === "choice" ? "none" : "";
-            $(".hint-row").style.display = name === "choice" ? "none" : "";
+            $(".clock-stage").style.display = name === "choice" ? "none" : "flex";
         };
 
         // Year 2 is the "past / to" language level, so its prompts are worded there too.
@@ -616,17 +617,25 @@
             $("#quiz-question").textContent = "Set the clock to match!";
             $("#set-target").textContent = label(q.hour, q.minute);
 
-            // Start the draggable clock on a different hour so it isn't already "solved"
+            // The hand always snaps to the 5-minute marks while dragging, whatever the
+            // level allows as an answer. Snapping to the level's own set would leave
+            // o'clock levels with a single legal position, so every drag pinged the
+            // hand straight back to the 12 and looked broken.
+            const dragSet = FIVE_MINUTE_MARKS;
+
+            // Start away from the answer on both hands, so there's something to do.
             let startHour = q.hour;
             while (startHour === q.hour) startHour = randInt(1, 12);
-            const state = { hour: startHour, minute: pick(q.minuteSet) };
+            let startMinute = q.minute;
+            while (startMinute === q.minute) startMinute = pick(dragSet);
+            const state = { hour: startHour, minute: startMinute };
             renderClock(clockEl, state.hour, state.minute);
             $("#hour-display").textContent = state.hour;
 
             $("#hour-minus").onclick = () => { state.hour = state.hour === 1 ? 12 : state.hour - 1; $("#hour-display").textContent = state.hour; setClockHands(clockEl, state.hour, state.minute); };
             $("#hour-plus").onclick = () => { state.hour = state.hour === 12 ? 1 : state.hour + 1; $("#hour-display").textContent = state.hour; setClockHands(clockEl, state.hour, state.minute); };
 
-            makeClockDraggable(clockEl, () => state.hour, (m) => { state.minute = m; }, q.minuteSet);
+            makeClockDraggable(clockEl, () => state.hour, (m) => { state.minute = m; }, dragSet);
 
             const checkBtn = $("#btn-check-set");
             checkBtn.disabled = false;
@@ -655,6 +664,11 @@
         if (why && MISCONCEPTION_HINTS[why]) {
             el.innerHTML = `💡 ${MISCONCEPTION_HINTS[why]}`;
             el.classList.add("show");
+            // It opens below the answers and can land under the browser chrome,
+            // so bring it into view once it has finished expanding.
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: "smooth", block: "end" });
+            }, 320);
         } else {
             el.classList.remove("show");
             el.innerHTML = "";
