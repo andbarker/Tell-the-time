@@ -71,6 +71,12 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
     border-radius: 999px;
     font-size: 1.05rem;
 }
+@keyframes starBump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+.star-bump { animation: starBump 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
 .container { max-width: 900px; margin: 0 auto; padding: var(--spacing-lg); }
 
@@ -185,8 +191,24 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 }
 
 .quiz-question { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: var(--spacing-md); }
-.clock-stage { display: flex; justify-content: center; margin: var(--spacing-lg) 0; }
+.clock-stage { display: flex; justify-content: center; margin: var(--spacing-lg) 0; position: relative; }
 .clock-wrap { width: 260px; }
+
+/* Reward pop-up — a little emoji that flies up over the clock on a correct answer */
+.reward-pop {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 2.6rem;
+    pointer-events: none;
+    animation: rewardPop 0.9s ease-out forwards;
+    z-index: 20;
+}
+@keyframes rewardPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+    35% { opacity: 1; transform: translate(-50%, -95%) scale(1.2) rotate(-8deg); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1) rotate(6deg); }
+}
 
 .answer-grid {
     display: grid;
@@ -232,6 +254,14 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
     font-size: 1.5rem;
 }
 .sound-btn:active { transform: translateY(3px); box-shadow: none; }
+.sound-btn.hint {
+    width: 44px; height: 44px;
+    font-size: 1.2rem;
+    background: var(--background-alt);
+    color: var(--primary);
+    border: 2px solid var(--primary-light);
+    box-shadow: none;
+}
 
 /* Set-the-clock drag mode */
 .set-clock-target { text-align: center; font-size: 2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: var(--spacing-md); }

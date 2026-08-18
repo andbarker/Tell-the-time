@@ -203,6 +203,24 @@
         osc.start(now);
         osc.stop(now + 0.3);
     }
+    function playVictorySound() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.value = freq;
+            const start = now + i * 0.12;
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.42);
+        });
+    }
 
     function shuffle(arr) {
         const a = arr.slice();
@@ -229,9 +247,32 @@
         }
     }
 
+    function rewardPopup() {
+        const stage = $(".clock-stage");
+        if (!stage) return;
+        const el = document.createElement("div");
+        el.className = "reward-pop";
+        el.textContent = pick(["⭐", "🎉", "🌟", "✨", "👏", "💫"]);
+        stage.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+    }
+
+    function updateNavStars() {
+        const el = $("#stars-total");
+        if (!el) return;
+        const newTotal = String(totalStars());
+        const changed = el.textContent !== newTotal;
+        el.textContent = newTotal;
+        if (changed) {
+            el.classList.remove("star-bump");
+            void el.offsetWidth;
+            el.classList.add("star-bump");
+        }
+    }
+
     // ---------- Home / level select ----------
     function renderHome() {
-        $("#stars-total").textContent = totalStars();
+        updateNavStars();
         const grid = $("#level-grid");
         grid.innerHTML = "";
         LEVELS.forEach(level => {
@@ -369,6 +410,9 @@
         const clockEl = $("#quiz-clock");
         clockEl.innerHTML = "";
 
+        const speakBtn = $("#btn-quiz-speak");
+        if (speakBtn) speakBtn.onclick = () => speak(spokenTime(q.hour, q.minute));
+
         if (q.type === "mcq") {
             $("#mcq-area").style.display = "";
             $("#set-area").style.display = "none";
@@ -421,6 +465,7 @@
             msg.classList.add("correct");
             playCorrectSound();
             confettiBurst(10);
+            rewardPopup();
             const firstTry = !session.missedThisQuestion;
             if (firstTry) session.correctFirstTry++;
             registerStreak(firstTry);
@@ -445,6 +490,7 @@
             msg.className = "feedback-msg correct";
             playCorrectSound();
             confettiBurst(10);
+            rewardPopup();
             const firstTry = !session.missedThisQuestion;
             if (firstTry) session.correctFirstTry++;
             registerStreak(firstTry);
@@ -480,6 +526,7 @@
             progress.levels[level.id] = { stars };
             saveProgress();
         }
+        updateNavStars();
 
         $("#complete-title").textContent = `${level.emoji} ${level.title} complete!`;
         const finalStars = Math.max(stars, prevStars);
@@ -503,6 +550,7 @@
         $("#btn-complete-home").onclick = () => { renderHome(); showScreen("screen-home"); };
 
         showScreen("screen-complete");
+        playVictorySound();
         confettiBurst(finalStars >= 3 ? 60 : 35);
     }
 

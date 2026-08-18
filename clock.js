@@ -108,47 +108,42 @@ function makeClockDraggable(container, getHour, onMinuteChange, allowedMinuteSet
     function onDown(e) {
         dragging = true;
         svg.setPointerCapture && e.pointerId != null && svg.setPointerCapture(e.pointerId);
-        handleMove(e.clientX ?? e.touches[0].clientX, e.clientY ?? e.touches[0].clientY, false);
+        handleMove(e.clientX, e.clientY, false);
         e.preventDefault();
     }
     function onMove(e) {
         if (!dragging) return;
-        const cx = e.clientX ?? (e.touches && e.touches[0].clientX);
-        const cy = e.clientY ?? (e.touches && e.touches[0].clientY);
-        if (cx == null) return;
-        handleMove(cx, cy, false);
+        handleMove(e.clientX, e.clientY, false);
         e.preventDefault();
     }
     function onUp(e) {
         if (!dragging) return;
         dragging = false;
-        const cx = e.clientX ?? (e.changedTouches && e.changedTouches[0].clientX);
-        const cy = e.clientY ?? (e.changedTouches && e.changedTouches[0].clientY);
-        let minute = allowedMinuteSet[0];
-        if (cx != null) {
-            minute = handleMove(cx, cy, true);
-            setClockHands(container, getHour(), minute, true);
-        }
+        const minute = handleMove(e.clientX, e.clientY, true);
+        setClockHands(container, getHour(), minute, true);
         onMinuteChange(minute);
+    }
+    function onCancel() {
+        // Interaction was interrupted (e.g. a browser gesture) — just stop dragging
+        // rather than guessing a minute, so the hand never snaps to a wrong position.
+        dragging = false;
     }
 
     svg.style.touchAction = "none";
     svg.style.cursor = "grab";
+    // Pointer Events alone cover mouse, touch, and pen — adding separate Touch
+    // Event listeners on top of these double-fires the down/move/up handlers on
+    // touchscreens, which is what caused the hand to snap to a wrong minute on release.
     svg.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
-    // Touch fallback
-    svg.addEventListener("touchstart", onDown, { passive: false });
-    svg.addEventListener("touchmove", onMove, { passive: false });
-    svg.addEventListener("touchend", onUp);
+    window.addEventListener("pointercancel", onCancel);
 
     return function destroy() {
         svg.removeEventListener("pointerdown", onDown);
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerup", onUp);
-        svg.removeEventListener("touchstart", onDown);
-        svg.removeEventListener("touchmove", onMove);
-        svg.removeEventListener("touchend", onUp);
+        window.removeEventListener("pointercancel", onCancel);
     };
 }
 
