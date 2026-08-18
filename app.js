@@ -8,81 +8,82 @@
 
     const LEVELS = [
         {
-            id: 1, emoji: "🕐", title: "O'Clock", desc: "Hour hand only",
+            id: 1, emoji: "🕐", title: "O'Clock", desc: "Meet the hour hand!",
             minuteSet: [0],
-            teachTitle: "The hour hand tells us the hour",
+            teachTitle: "The hour hand is your clock buddy! 🕐",
             teachHour: 3, teachMinute: 0,
             teachPoints: [
-                "The <b>short, fat hand</b> is the hour hand.",
-                "At o'clock times, the <b>long hand points straight up</b> at the 12.",
-                "The short hand points right at the number — that's the hour!"
+                "The <b>short, fat hand</b> is the hour hand — that's your buddy!",
+                "At o'clock times, the <b>long hand points straight up</b> at the 12, like a rocket! 🚀",
+                "Just read where the short hand points — that's the hour!"
             ]
         },
         {
-            id: 2, emoji: "🕡", title: "Half Past", desc: "Halfway round",
+            id: 2, emoji: "🕡", title: "Half Past", desc: "Halfway there!",
             minuteSet: [0, 30],
-            teachTitle: "Half past means halfway to the next hour",
+            teachTitle: "Half past means halfway round! 🕡",
             teachHour: 3, teachMinute: 30,
             teachPoints: [
-                "When the <b>long minute hand</b> points straight <b>down</b> at the 6, that's 30 minutes — half past!",
-                "The short hour hand creeps <b>halfway</b> between two numbers.",
+                "When the <b>long minute hand</b> points straight <b>down</b> at the 6, it's half past!",
+                "The short hour hand sneaks <b>halfway</b> between two numbers — sneaky! 🤫",
                 "This clock shows <b>half past 3</b> — written 3:30."
             ]
         },
         {
-            id: 3, emoji: "🕒", title: "Quarter Past & To", desc: "Quarter turns",
+            id: 3, emoji: "🕒", title: "Quarter Past & To", desc: "Quarter turns!",
             minuteSet: [0, 15, 30, 45],
-            teachTitle: "Quarter past and quarter to",
+            teachTitle: "Quarter past and quarter to! 🕒",
             teachHour: 3, teachMinute: 15,
             teachPoints: [
-                "The minute hand at the <b>3</b> means <b>quarter past</b> — 15 minutes.",
-                "The minute hand at the <b>9</b> means <b>quarter to</b> the next hour — 45 minutes.",
+                "Minute hand on the <b>3</b>? That's <b>quarter past</b> — 15 minutes!",
+                "Minute hand on the <b>9</b>? That's <b>quarter to</b> the next hour — 45 minutes!",
                 "This clock shows <b>quarter past 3</b> — written 3:15."
             ]
         },
         {
-            id: 4, emoji: "🕔", title: "Five Minutes", desc: "Every 5-minute mark",
+            id: 4, emoji: "🕔", title: "Five Minutes", desc: "Count by 5s!",
             minuteSet: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
-            teachTitle: "Counting in 5s around the clock",
+            teachTitle: "Let's count by 5s around the clock! 🕔",
             teachHour: 3, teachMinute: 20,
             teachPoints: [
-                "Each number on the clock is <b>5 minutes</b> apart.",
-                "Count by 5s from the 12: 5, 10, 15, 20&hellip; all the way round to 60.",
-                "This clock's minute hand is on the 4 &mdash; that's <b>20 minutes</b>, so it's 3:20."
+                "Each number on the clock is <b>5 minutes</b> apart — easy peasy!",
+                "Count with me: 5, 10, 15, 20&hellip; all the way round to 60!",
+                "The minute hand's on the 4? That's <b>20 minutes</b>, so it's 3:20!"
             ]
         },
         {
-            id: 5, emoji: "🕓", title: "Any Minute", desc: "Exact minutes",
+            id: 5, emoji: "🕓", title: "Any Minute", desc: "Every tick counts!",
             minuteSet: Array.from({ length: 60 }, (_, i) => i),
-            teachTitle: "Reading every single minute",
+            teachTitle: "Time to read every single minute! 🕓",
             teachHour: 3, teachMinute: 23,
             teachPoints: [
-                "Now we read the <b>small ticks</b> between the numbers too.",
-                "Each small tick is <b>1 minute</b>.",
-                "This clock shows 3 hours and 23 minutes &mdash; written 3:23."
+                "Now we read the <b>tiny ticks</b> between the numbers too.",
+                "Each little tick is just <b>1 minute</b>.",
+                "This clock shows 3 hours and 23 minutes &mdash; that's 3:23!"
             ]
         },
         {
-            id: 6, emoji: "🏆", title: "Time Master", desc: "Mixed challenge",
+            id: 6, emoji: "🏆", title: "Time Master", desc: "The big challenge!",
             minuteSet: "mixed",
-            teachTitle: "Time to show what you know!",
+            teachTitle: "You're ready — show us what you know! 🏆",
             teachHour: 7, teachMinute: 45,
             teachPoints: [
-                "This round mixes up <b>every kind</b> of time you've learned.",
-                "Take your time and look carefully at both hands.",
-                "Finish this and you're a true <b>Time Master</b>! 🏆"
+                "This round mixes up <b>everything</b> you've learned!",
+                "Look carefully at both hands — you've got this!",
+                "Finish this and you're an official <b>Time Master</b>! 🏆⭐"
             ]
         }
     ];
 
     const ENCOURAGE_CORRECT = [
         "Brilliant! 🌟", "You've got it!", "Yes! Great reading!", "Nailed it! 🎉",
-        "Awesome work!", "That's exactly right!", "Super job!", "You're getting so good at this!"
+        "Awesome work!", "That's exactly right!", "Super job!", "You're getting so good at this!",
+        "Woohoo! 🎉", "You're on fire! 🔥", "Clock master move! 🕐", "High five! 🙌"
     ];
     const ENCOURAGE_RETRY = [
         "Not quite — look at the minute hand again!", "Close! Have another look and try again.",
         "Almost! Check where each hand is pointing.", "Good try — give it one more look!",
-        "Nearly there — you can do this!"
+        "Nearly there — you can do this!", "So close! You've got this — try again! 💪"
     ];
 
     // ---------- State ----------
@@ -118,7 +119,33 @@
     function showScreen(id) {
         $$(".screen").forEach(s => s.classList.remove("active"));
         $("#" + id).classList.add("active");
+        document.body.dataset.screen = id;
         window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Prefer a warmer, more natural-sounding voice over the default robotic one.
+    let cachedVoice = null;
+    function pickVoice() {
+        if (!window.speechSynthesis) return null;
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices.length) return null;
+        const preferredNames = [
+            "Google UK English Female", "Samantha", "Karen", "Moira", "Tessa",
+            "Victoria", "Fiona", "Kate", "Serena", "Google US English"
+        ];
+        for (const name of preferredNames) {
+            const v = voices.find(v => v.name === name);
+            if (v) return v;
+        }
+        const female = voices.find(v => /^en/i.test(v.lang) && /female/i.test(v.name));
+        if (female) return female;
+        const enLocal = voices.find(v => /^en/i.test(v.lang) && v.localService);
+        if (enLocal) return enLocal;
+        return voices.find(v => /^en/i.test(v.lang)) || voices[0];
+    }
+    if (window.speechSynthesis) {
+        cachedVoice = pickVoice();
+        window.speechSynthesis.onvoiceschanged = () => { cachedVoice = pickVoice(); };
     }
 
     function speak(text) {
@@ -126,10 +153,55 @@
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(text);
-            u.rate = 0.9;
-            u.pitch = 1.1;
+            u.rate = 1.0;
+            u.pitch = 1.05;
+            const voice = cachedVoice || pickVoice();
+            if (voice) u.voice = voice;
             window.speechSynthesis.speak(u);
         } catch (e) { /* ignore */ }
+    }
+
+    // Playful chime sounds for instant feedback, instead of leaning on speech synthesis.
+    let audioCtx = null;
+    function getAudioCtx() {
+        if (!audioCtx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) audioCtx = new AC();
+        }
+        return audioCtx;
+    }
+    function playCorrectSound() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = freq;
+            const start = now + i * 0.09;
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.2, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.32);
+        });
+    }
+    function playTryAgainSound() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.25);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
     }
 
     function shuffle(arr) {
@@ -259,10 +331,28 @@
             questions: buildQuestionList(levelId),
             index: 0,
             correctFirstTry: 0,
-            missedThisQuestion: false
+            missedThisQuestion: false,
+            streak: 0
         };
+        updateStreakBadge();
         renderQuestion();
         showScreen("screen-practice");
+    }
+
+    function registerStreak(correctFirstTry) {
+        session.streak = correctFirstTry ? (session.streak || 0) + 1 : 0;
+        updateStreakBadge();
+    }
+
+    function updateStreakBadge() {
+        const badge = $("#streak-badge");
+        if (!badge) return;
+        if (session && session.streak >= 2) {
+            badge.textContent = `🔥 ${session.streak} in a row!`;
+            badge.classList.add("show");
+        } else {
+            badge.classList.remove("show");
+        }
     }
 
     function renderQuestion() {
@@ -329,8 +419,11 @@
             const msg = $("#feedback-msg");
             msg.textContent = pick(ENCOURAGE_CORRECT);
             msg.classList.add("correct");
-            speak(pick(ENCOURAGE_CORRECT) + ` It's ${spokenTime(q.hour, q.minute)}.`);
-            if (!session.missedThisQuestion) session.correctFirstTry++;
+            playCorrectSound();
+            confettiBurst(10);
+            const firstTry = !session.missedThisQuestion;
+            if (firstTry) session.correctFirstTry++;
+            registerStreak(firstTry);
             setTimeout(nextQuestion, 1300);
         } else {
             session.missedThisQuestion = true;
@@ -339,6 +432,8 @@
             const msg = $("#feedback-msg");
             msg.textContent = pick(ENCOURAGE_RETRY);
             msg.classList.add("wrong");
+            playTryAgainSound();
+            registerStreak(false);
         }
     }
 
@@ -348,14 +443,19 @@
         if (correct) {
             msg.textContent = pick(ENCOURAGE_CORRECT);
             msg.className = "feedback-msg correct";
-            speak(pick(ENCOURAGE_CORRECT) + ` That's ${spokenTime(q.hour, q.minute)}.`);
-            if (!session.missedThisQuestion) session.correctFirstTry++;
+            playCorrectSound();
+            confettiBurst(10);
+            const firstTry = !session.missedThisQuestion;
+            if (firstTry) session.correctFirstTry++;
+            registerStreak(firstTry);
             $("#btn-check-set").disabled = true;
             setTimeout(nextQuestion, 1300);
         } else {
             session.missedThisQuestion = true;
             msg.textContent = pick(ENCOURAGE_RETRY);
             msg.className = "feedback-msg wrong shake";
+            playTryAgainSound();
+            registerStreak(false);
         }
     }
 

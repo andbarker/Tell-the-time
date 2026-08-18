@@ -164,7 +164,7 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 
 /* Learn screen */
 .teach-example { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--spacing-xl); margin: var(--spacing-lg) 0; }
-.teach-clock-wrap { width: 220px; }
+.teach-clock-wrap .clock-wrap { width: 220px; }
 .teach-text { max-width: 380px; font-size: 1.15rem; }
 .teach-text p { margin-bottom: var(--spacing-md); }
 .teach-text .rule { background: var(--background-alt); border-left: 4px solid var(--primary); padding: var(--spacing-md); border-radius: var(--border-radius); font-weight: 600; }
@@ -282,13 +282,48 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 
 footer { text-align: center; color: var(--text-light); padding: var(--spacing-lg); font-size: 0.9rem; }
 
-/* Responsive */
-@media (max-width: 600px) {
+/* Keep the lesson/quiz screens focused — the credit line only shows on the home screen */
+body:not([data-screen="screen-home"]) footer { display: none; }
+
+/* Streak badge */
+.streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--secondary);
+    color: white;
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 1rem;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: var(--spacing-sm);
+}
+.streak-badge.show { opacity: 1; transform: scale(1); }
+
+/* Responsive — triggers on narrow OR short viewports, whichever is tighter,
+   so phone-sized screens fit without scrolling */
+@media (max-width: 600px), (max-height: 700px) {
     body { font-size: 16px; }
-    .container { padding: var(--spacing-md); }
-    .panel { padding: var(--spacing-lg); }
-    .clock-wrap { width: 210px; }
-    .answer-grid { grid-template-columns: 1fr 1fr; }
-    .answer-btn { font-size: 1.15rem; padding: 12px; }
-    .teach-example { flex-direction: column; }
+    .container { padding: var(--spacing-sm) var(--spacing-md); }
+    .panel { padding: var(--spacing-sm) var(--spacing-md); margin-top: var(--spacing-sm); }
+    .panel-header { margin-bottom: var(--spacing-sm); }
+    h2 { font-size: 1.3rem; }
+    .clock-wrap { width: clamp(130px, min(40vw, 24vh), 210px); }
+    .teach-clock-wrap .clock-wrap { width: clamp(110px, min(34vw, 20vh), 180px); }
+    .teach-example { flex-direction: column; gap: var(--spacing-sm); margin: var(--spacing-sm) 0; }
+    #teach-subtitle { margin-bottom: var(--spacing-xs) !important; font-size: 0.95rem !important; }
+    .teach-text { font-size: 0.92rem; }
+    .teach-text p { margin-bottom: 6px; }
+    .teach-text .rule { padding: var(--spacing-sm); }
+    .answer-grid { grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
+    .answer-btn { font-size: 1.1rem; padding: 10px; }
+    .clock-stage { margin: var(--spacing-sm) 0; }
+    .progress-bar-track { margin-bottom: var(--spacing-sm); }
+    .quiz-question { font-size: 1.1rem; margin-bottom: var(--spacing-xs); }
+    .feedback-msg { margin-top: var(--spacing-sm); font-size: 1.1rem; }
+    .btn-row { margin-top: var(--spacing-sm); gap: var(--spacing-sm); }
+    .btn { padding: 12px 20px; font-size: 1rem; }
 }
