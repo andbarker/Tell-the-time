@@ -40,6 +40,7 @@ function clockFaceSVG() {
     return `
     <svg viewBox="0 0 220 220" width="100%" height="100%" class="clock-svg">
         <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R}" fill="#FFFFFF" stroke="#DFE1FA" stroke-width="4"/>
+        <path class="hour-space" d="" fill="#FFD79B" opacity="0"/>
         ${ticks}
         ${numbers}
         <line class="hour-hand" x1="${CLOCK_CX}" y1="${CLOCK_CY}" x2="${CLOCK_CX}" y2="${CLOCK_CY - 48}" stroke="#33344A" stroke-width="7" stroke-linecap="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
@@ -52,11 +53,49 @@ function clockFaceSVG() {
 function hourAngle(hour, minute) { return (hour % 12) * 30 + minute * 0.5; }
 function minuteAngle(minute) { return minute * 6; }
 
+// Wedge covering the "space of the hour" — the slice the hour hand travels through
+// during one hour. Showing it is what stops kids reading 2:50 as 3:50: the hand is
+// nearly touching the 3, but it is still inside the 2 o'clock space.
+function hourSpacePath(hour) {
+    const r = CLOCK_R - 6;
+    const start = (hour % 12) * 30;
+    const point = (deg) => {
+        const rad = deg * Math.PI / 180;
+        return [
+            (CLOCK_CX + r * Math.sin(rad)).toFixed(1),
+            (CLOCK_CY - r * Math.cos(rad)).toFixed(1)
+        ];
+    };
+    const [x1, y1] = point(start);
+    const [x2, y2] = point(start + 30);
+    return `M ${CLOCK_CX} ${CLOCK_CY} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
+}
+
+// opts: { hideMinuteHand, showHourSpace }
+function applyClockOptions(container, hour, opts = {}) {
+    const svg = container.querySelector(".clock-svg");
+    if (!svg) return;
+    const minuteHand = svg.querySelector(".minute-hand");
+    const dragTarget = svg.querySelector(".drag-target");
+    if (minuteHand) minuteHand.style.display = opts.hideMinuteHand ? "none" : "";
+    if (dragTarget) dragTarget.style.display = opts.hideMinuteHand ? "none" : "";
+    const space = svg.querySelector(".hour-space");
+    if (space) {
+        if (opts.showHourSpace) {
+            space.setAttribute("d", hourSpacePath(hour));
+            space.style.opacity = "1";
+        } else {
+            space.style.opacity = "0";
+        }
+    }
+}
+
 // Render (or re-render) a clock into a container element.
-function renderClock(container, hour, minute) {
+function renderClock(container, hour, minute, opts = {}) {
     if (!container.querySelector(".clock-svg")) {
         container.innerHTML = clockFaceSVG();
     }
+    applyClockOptions(container, hour, opts);
     setClockHands(container, hour, minute);
 }
 
@@ -150,6 +189,18 @@ function makeClockDraggable(container, getHour, onMinuteChange, allowedMinuteSet
 function formatDigital(hour, minute) {
     const h12 = ((hour % 12) === 0) ? 12 : (hour % 12);
     return `${h12}:${String(minute).padStart(2, "0")}`;
+}
+
+// "Past / to" wording — the language the Year 2 curriculum asks children to use.
+function formatWords(hour, minute) {
+    const h12 = ((hour % 12) === 0) ? 12 : (hour % 12);
+    const next = (h12 % 12) + 1;
+    if (minute === 0) return `${h12} o'clock`;
+    if (minute === 15) return `quarter past ${h12}`;
+    if (minute === 30) return `half past ${h12}`;
+    if (minute === 45) return `quarter to ${next}`;
+    if (minute < 30) return `${minute} past ${h12}`;
+    return `${60 - minute} to ${next}`;
 }
 
 function spokenTime(hour, minute) {

@@ -5,66 +5,80 @@
     const STORAGE_KEY = "tellTheTimeProgress_v1";
     const QUESTIONS_PER_LEVEL = 8;
     const SET_QUESTIONS = 2; // how many of the 8 are "Set the Clock" drag questions
+    const FIVE_MINUTE_MARKS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
     const LEVELS = [
         {
-            id: 1, emoji: "🕐", title: "O'Clock", desc: "Meet the hour hand!",
-            minuteSet: [0],
-            teachTitle: "The hour hand is your clock buddy! 🕐",
-            teachHour: 3, teachMinute: 0,
+            id: 1, emoji: "👉", title: "Just the Hour Hand", desc: "Meet the short hand!",
+            minuteSet: [0], curriculum: "Year 1",
+            hourHandOnly: true,
+            teachTitle: "The hour hand lives in a space! 👉",
+            teachHour: 3, teachMinute: 40,
+            teachShowHourSpace: true,
             teachPoints: [
-                "The <b>short, fat hand</b> is the hour hand — that's your buddy!",
-                "At o'clock times, the <b>long hand points straight up</b> at the 12, like a rocket! 🚀",
-                "Just read where the short hand points — that's the hour!"
+                "We've hidden the long hand — let's meet the <b>short hour hand</b> on its own.",
+                "The hour hand doesn't jump. It <b>creeps slowly</b> across the orange space all hour long.",
+                "Look! It's nearly at the 4 — but it's still in the <b>3's space</b>, so it's still 3 o'clock. Sneaky! 🤫"
             ]
         },
         {
-            id: 2, emoji: "🕡", title: "Half Past", desc: "Halfway there!",
-            minuteSet: [0, 30],
+            id: 2, emoji: "🕐", title: "O'Clock", desc: "Both hands together!",
+            minuteSet: [0], curriculum: "Year 1",
+            teachTitle: "Now the long hand joins in! 🕐",
+            teachHour: 3, teachMinute: 0,
+            teachPoints: [
+                "The <b>short</b> hand is the hour. The <b>long</b> hand is the minutes.",
+                "At o'clock times, the <b>long hand points straight up</b> at the 12, like a rocket! 🚀",
+                "Read the short hand first — that's the hour. This says <b>3 o'clock</b>."
+            ]
+        },
+        {
+            id: 3, emoji: "🕡", title: "Half Past", desc: "Halfway there!",
+            minuteSet: [0, 30], curriculum: "Year 1",
             teachTitle: "Half past means halfway round! 🕡",
             teachHour: 3, teachMinute: 30,
             teachPoints: [
                 "When the <b>long minute hand</b> points straight <b>down</b> at the 6, it's half past!",
                 "The short hour hand sneaks <b>halfway</b> between two numbers — sneaky! 🤫",
-                "This clock shows <b>half past 3</b> — written 3:30."
+                "We say <b>half past 3</b>, and we write it 3:30."
             ]
         },
         {
-            id: 3, emoji: "🕒", title: "Quarter Past & To", desc: "Quarter turns!",
-            minuteSet: [0, 15, 30, 45],
+            id: 4, emoji: "🕒", title: "Quarter Past & To", desc: "Say it with words!",
+            minuteSet: [0, 15, 30, 45], curriculum: "Year 2",
             teachTitle: "Quarter past and quarter to! 🕒",
             teachHour: 3, teachMinute: 15,
             teachPoints: [
-                "Minute hand on the <b>3</b>? That's <b>quarter past</b> — 15 minutes!",
-                "Minute hand on the <b>9</b>? That's <b>quarter to</b> the next hour — 45 minutes!",
-                "This clock shows <b>quarter past 3</b> — written 3:15."
+                "Minute hand on the <b>3</b>? That's <b>quarter past</b> — 15 minutes.",
+                "Minute hand on the <b>9</b>? Now we count <b>to</b> the next hour: <b>quarter to</b>!",
+                "This clock says <b>quarter past 3</b>, and we write it 3:15."
             ]
         },
         {
-            id: 4, emoji: "🕔", title: "Five Minutes", desc: "Count by 5s!",
-            minuteSet: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+            id: 5, emoji: "🕔", title: "Five Minutes", desc: "Count by 5s!",
+            minuteSet: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], curriculum: "Year 3",
             teachTitle: "Let's count by 5s around the clock! 🕔",
             teachHour: 3, teachMinute: 20,
             teachPoints: [
                 "Each number on the clock is <b>5 minutes</b> apart — easy peasy!",
                 "Count with me: 5, 10, 15, 20&hellip; all the way round to 60!",
-                "The minute hand's on the 4? That's <b>20 minutes</b>, so it's 3:20!"
+                "The minute hand's on the 4? That's <b>20 past 3</b> — written 3:20."
             ]
         },
         {
-            id: 5, emoji: "🕓", title: "Any Minute", desc: "Every tick counts!",
-            minuteSet: Array.from({ length: 60 }, (_, i) => i),
+            id: 6, emoji: "🕓", title: "Any Minute", desc: "Every tick counts!",
+            minuteSet: Array.from({ length: 60 }, (_, i) => i), curriculum: "Year 3",
             teachTitle: "Time to read every single minute! 🕓",
             teachHour: 3, teachMinute: 23,
             teachPoints: [
                 "Now we read the <b>tiny ticks</b> between the numbers too.",
                 "Each little tick is just <b>1 minute</b>.",
-                "This clock shows 3 hours and 23 minutes &mdash; that's 3:23!"
+                "This clock shows <b>23 past 3</b> &mdash; written 3:23!"
             ]
         },
         {
-            id: 6, emoji: "🏆", title: "Time Master", desc: "The big challenge!",
-            minuteSet: "mixed",
+            id: 7, emoji: "🏆", title: "Time Master", desc: "The big challenge!",
+            minuteSet: "mixed", curriculum: "Year 3",
             teachTitle: "You're ready — show us what you know! 🏆",
             teachHour: 7, teachMinute: 45,
             teachPoints: [
@@ -74,6 +88,16 @@
             ]
         }
     ];
+
+    // Wrong answers built from documented clock-reading errors, so a wrong tap tells
+    // you which misunderstanding is behind it (and the child gets a targeted hint).
+    const MISCONCEPTION_HINTS = {
+        hourProximity: "Look again at the <b>short</b> hand — it's nearly at the next number, but it hasn't got there yet! It's still in the hour before.",
+        handSwap: "Careful — check which hand is which. The <b>short</b> hand is the hour, the <b>long</b> one is the minutes.",
+        minuteAsNumber: "The minute hand points at a number, but that's not the minutes! Count in <b>5s</b> from the 12.",
+        countOffByFive: "So close! Count the 5s around from the 12 again — you're one number out.",
+        quarterMixUp: "Watch out for <b>past</b> and <b>to</b>! After the 6, we count <b>to</b> the next hour."
+    };
 
     const ENCOURAGE_CORRECT = [
         "Brilliant! 🌟", "You've got it!", "Yes! Great reading!", "Nailed it! 🎉",
@@ -286,7 +310,8 @@
                 <div class="level-desc">${level.desc}</div>
                 <div class="level-stars">
                     ${[1, 2, 3].map(n => `<span class="${n <= stars ? "" : "dim"}">⭐</span>`).join("")}
-                </div>`;
+                </div>
+                ${level.curriculum ? `<div class="level-curriculum">${level.curriculum}</div>` : ""}`;
             if (unlocked) card.addEventListener("click", () => enterLevel(level.id));
             grid.appendChild(card);
         });
@@ -304,64 +329,117 @@
         $("#teach-subtitle").textContent = level.teachTitle;
         const clockEl = $("#teach-clock");
         clockEl.innerHTML = "";
-        renderClock(clockEl, level.teachHour, level.teachMinute);
+        renderClock(clockEl, level.teachHour, level.teachMinute, {
+            hideMinuteHand: !!level.hourHandOnly,
+            showHourSpace: !!level.teachShowHourSpace
+        });
         $("#teach-points").innerHTML = level.teachPoints.map(p => `<p>👉 ${p}</p>`).join("");
-        $("#teach-digital").textContent = formatDigital(level.teachHour, level.teachMinute);
+        $("#teach-digital").textContent = level.hourHandOnly
+            ? formatWords(level.teachHour, 0)
+            : `${formatWords(level.teachHour, level.teachMinute)} (${formatDigital(level.teachHour, level.teachMinute)})`;
         $("#btn-start-practice").onclick = () => startPractice(level.id);
         $("#btn-teach-back").onclick = () => { renderHome(); showScreen("screen-home"); };
         $("#btn-teach-speak").onclick = () => speak(`This clock shows ${spokenTime(level.teachHour, level.teachMinute)}.`);
     }
 
     // ---------- Practice / quiz ----------
-    function buildQuestionList(levelId) {
-        const level = LEVELS.find(l => l.id === levelId);
-        const types = shuffle([
-            ...Array(QUESTIONS_PER_LEVEL - SET_QUESTIONS).fill("mcq"),
-            ...Array(SET_QUESTIONS).fill("set")
-        ]);
-        return types.map(type => ({ type, ...generateTime(level) }));
+    // Question mixes per level. Words-based answers carry the Year 2 curriculum
+    // requirement to use the language of "past" and "to", so they lead from level 4.
+    function questionMixFor(level) {
+        if (level.hourHandOnly) return Array(QUESTIONS_PER_LEVEL).fill("hourspace");
+        if (level.id <= 3) {
+            return ["mcqWords", "mcqWords", "mcqDigital", "whichClock",
+                    "set", "mcqWords", "mcqDigital", "set"];
+        }
+        if (level.curriculum === "Year 2") {
+            return ["mcqWords", "mcqWords", "whichClock", "setWords",
+                    "mcqDigital", "mcqWords", "set", "mcqWords"];
+        }
+        return ["mcqDigital", "mcqWords", "whichClock", "set",
+                "mcqWords", "mcqDigital", "setWords", "mcqWords"];
     }
 
-    function generateTime(level) {
+    function buildQuestionList(levelId) {
+        const level = LEVELS.find(l => l.id === levelId);
+        const types = shuffle(questionMixFor(level));
+        return types.map(type => ({ type, ...generateTime(level, type) }));
+    }
+
+    function generateTime(level, type) {
         let minuteSet = level.minuteSet;
         if (minuteSet === "mixed") {
             // Time Master: sample from a random earlier level's minute set for variety
-            const pool = LEVELS.slice(0, 5);
+            const pool = LEVELS.filter(l => !l.hourHandOnly && l.minuteSet !== "mixed");
             minuteSet = pick(pool).minuteSet;
         }
         const hour = randInt(1, 12);
-        const minute = pick(minuteSet);
-        return { hour, minute, minuteSet };
+        if (type === "hourspace") {
+            // Drift the hour hand through its hour — the late positions (nearly at the
+            // next number) are exactly the ones children misread, so weight them in.
+            return { hour, minute: pick([0, 10, 20, 25, 35, 40, 50, 55]), minuteSet: [0] };
+        }
+        // Reading to the exact minute is fair, but *dragging* to one minute out of 60
+        // is far too fiddly for small fingers — so questions that ask the child to set
+        // the clock stay on the 5-minute marks.
+        if ((type === "set" || type === "setWords") && minuteSet.length > 12) {
+            minuteSet = FIVE_MINUTE_MARKS;
+        }
+        return { hour, minute: pick(minuteSet), minuteSet };
     }
 
+    // Distractors built from documented clock-reading errors rather than at random.
+    // Each carries the misconception it represents so a wrong tap can be answered
+    // with a hint aimed at that specific confusion.
     function generateDistractors(hour, minute, minuteSet, count = 3) {
+        const norm = (h) => ((h - 1 + 12) % 12) + 1;
         const seen = new Set([`${hour}:${minute}`]);
-        const results = [];
-        let attempts = 0;
-        while (results.length < count && attempts < 200) {
-            attempts++;
-            let h = hour, m = minute;
-            const mode = randInt(0, 2);
-            if (mode === 0) {
-                // same hour, different minute
-                m = pick(minuteSet);
-            } else if (mode === 1) {
-                // adjacent hour, same minute
-                h = ((hour - 1 + randInt(0, 1) * 2 + 12) % 12) || 12;
-                if (h === hour) h = (hour % 12) + 1;
-            } else {
-                // adjacent hour AND different minute (classic quarter-to/past mix-up)
-                h = ((hour % 12) + 1);
-                m = pick(minuteSet);
-            }
+        const candidates = [];
+        const add = (h, m, why) => {
+            h = norm(h);
+            m = ((m % 60) + 60) % 60;
             const key = `${h}:${m}`;
-            if (!seen.has(key)) { seen.add(key); results.push({ hour: h, minute: m }); }
-        }
-        // Fallback fill (extremely unlikely to be needed)
-        while (results.length < count) {
+            if (seen.has(key)) return;
+            seen.add(key);
+            candidates.push({ hour: h, minute: m, why });
+        };
+
+        // The single most common documented error: the hour hand sits close to the
+        // next number late in the hour, so 2:50 gets read as 3:50.
+        if (minute >= 30) add(hour + 1, minute, "hourProximity");
+        else if (minute > 0) add(hour - 1, minute, "hourProximity");
+
+        // Reading the hour hand as the minute hand and vice versa.
+        add(Math.round(minute / 5) || 12, (hour % 12) * 5, "handSwap");
+
+        // Minute hand read as the number it points at (on the 4 → "4", not 20).
+        if (minute % 5 === 0 && minute >= 10) add(hour, minute / 5, "minuteAsNumber");
+
+        // Quarter past / quarter to swapped.
+        if (minute === 15) add(hour, 45, "quarterMixUp");
+        if (minute === 45) add(hour, 15, "quarterMixUp");
+
+        // Counting the 5s from the wrong place — one number out either way.
+        add(hour, minute + 5, "countOffByFive");
+        add(hour, minute - 5, "countOffByFive");
+
+        // On the tightly-constrained early levels, only offer times that could
+        // actually occur there, or the wrong answers look obviously silly.
+        const constrained = minuteSet.length <= 4;
+        let pool = constrained
+            ? candidates.filter(c => minuteSet.indexOf(c.minute) !== -1)
+            : candidates;
+
+        pool = shuffle(pool);
+        const results = pool.slice(0, count);
+
+        // Top up with plausible random times if the misconception set came up short.
+        let guard = 0;
+        while (results.length < count && guard++ < 200) {
             const h = randInt(1, 12), m = pick(minuteSet);
             const key = `${h}:${m}`;
-            if (!seen.has(key)) { seen.add(key); results.push({ hour: h, minute: m }); }
+            if (seen.has(key)) continue;
+            seen.add(key);
+            results.push({ hour: h, minute: m, why: null });
         }
         return results;
     }
@@ -406,35 +484,79 @@
         $("#progress-fill").style.width = pct + "%";
         $("#feedback-msg").textContent = "";
         $("#feedback-msg").className = "feedback-msg";
+        showMisconceptionHint(null);
 
         const clockEl = $("#quiz-clock");
         clockEl.innerHTML = "";
 
         const speakBtn = $("#btn-quiz-speak");
-        if (speakBtn) speakBtn.onclick = () => speak(spokenTime(q.hour, q.minute));
+        if (speakBtn) {
+            speakBtn.onclick = () => speak(q.type === "hourspace"
+                ? `Which hour are we in? Look at the short hand.`
+                : spokenTime(q.hour, q.minute));
+        }
 
-        if (q.type === "mcq") {
-            $("#mcq-area").style.display = "";
-            $("#set-area").style.display = "none";
-            $("#quiz-question").textContent = "What time is it?";
+        const showArea = (name) => {
+            $("#mcq-area").style.display = name === "mcq" ? "" : "none";
+            $("#set-area").style.display = name === "set" ? "" : "none";
+            $("#choice-area").style.display = name === "choice" ? "" : "none";
+            $(".clock-stage").style.display = name === "choice" ? "none" : "";
+            $(".hint-row").style.display = name === "choice" ? "none" : "";
+        };
+
+        // Year 2 is the "past / to" language level, so its prompts are worded there too.
+        const isWords = q.type === "mcqWords" || q.type === "setWords"
+            || (q.type === "whichClock" && level.curriculum === "Year 2");
+        const label = (h, m) => isWords ? formatWords(h, m) : formatDigital(h, m);
+
+        if (q.type === "hourspace") {
+            // One-handed clock: which hour's space is the hand in?
+            showArea("mcq");
+            $("#quiz-question").textContent = "Which hour are we in?";
+            renderClock(clockEl, q.hour, q.minute, { hideMinuteHand: true });
+
+            const options = shuffle([
+                { hour: q.hour, minute: 0 },
+                { hour: (q.hour % 12) + 1, minute: 0, why: "hourProximity" },
+                { hour: ((q.hour - 2 + 12) % 12) + 1, minute: 0 },
+                { hour: ((q.hour + 1) % 12) + 1, minute: 0 }
+            ]);
+            buildAnswerButtons(options, q, (h) => `${((h % 12) === 0 ? 12 : h % 12)} o'clock`);
+
+        } else if (q.type === "whichClock") {
+            // Reverse direction: given a time, pick the clock that shows it.
+            showArea("choice");
+            $("#quiz-question").textContent = "Which clock shows this time?";
+            $("#choice-target").textContent = label(q.hour, q.minute);
+
+            const distractors = generateDistractors(q.hour, q.minute, q.minuteSet);
+            const options = shuffle([{ hour: q.hour, minute: q.minute, why: null }, ...distractors]);
+            const grid = $("#clock-choice-grid");
+            grid.innerHTML = "";
+            options.forEach(opt => {
+                const cell = document.createElement("button");
+                cell.className = "clock-choice";
+                const face = document.createElement("div");
+                face.className = "clock-wrap";
+                cell.appendChild(face);
+                grid.appendChild(cell);
+                renderClock(face, opt.hour, opt.minute);
+                cell.addEventListener("click", () => handleChoiceAnswer(cell, opt, q));
+            });
+
+        } else if (q.type === "mcqWords" || q.type === "mcqDigital") {
+            showArea("mcq");
+            $("#quiz-question").textContent = isWords ? "How do we say this time?" : "What time is it?";
             renderClock(clockEl, q.hour, q.minute);
 
             const distractors = generateDistractors(q.hour, q.minute, q.minuteSet);
-            const options = shuffle([{ hour: q.hour, minute: q.minute }, ...distractors]);
-            const answerGrid = $("#answer-grid");
-            answerGrid.innerHTML = "";
-            options.forEach(opt => {
-                const btn = document.createElement("button");
-                btn.className = "answer-btn";
-                btn.textContent = formatDigital(opt.hour, opt.minute);
-                btn.addEventListener("click", () => handleMcqAnswer(btn, opt, q));
-                answerGrid.appendChild(btn);
-            });
+            const options = shuffle([{ hour: q.hour, minute: q.minute, why: null }, ...distractors]);
+            buildAnswerButtons(options, q, null, isWords);
+
         } else {
-            $("#mcq-area").style.display = "none";
-            $("#set-area").style.display = "";
+            showArea("set");
             $("#quiz-question").textContent = "Set the clock to match!";
-            $("#set-target").textContent = formatDigital(q.hour, q.minute);
+            $("#set-target").textContent = label(q.hour, q.minute);
 
             // Start the draggable clock on a different hour so it isn't already "solved"
             let startHour = q.hour;
@@ -454,54 +576,123 @@
         }
     }
 
+    function buildAnswerButtons(options, q, customLabel, useWords) {
+        const answerGrid = $("#answer-grid");
+        answerGrid.innerHTML = "";
+        options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "answer-btn";
+            btn.textContent = customLabel
+                ? customLabel(opt.hour)
+                : (useWords ? formatWords(opt.hour, opt.minute) : formatDigital(opt.hour, opt.minute));
+            btn.addEventListener("click", () => handleMcqAnswer(btn, opt, q));
+            answerGrid.appendChild(btn);
+        });
+    }
+
+    // Shows a hint aimed at the specific misconception behind a wrong answer.
+    function showMisconceptionHint(why) {
+        const el = $("#misconception-hint");
+        if (!el) return;
+        if (why && MISCONCEPTION_HINTS[why]) {
+            el.innerHTML = `💡 ${MISCONCEPTION_HINTS[why]}`;
+            el.classList.add("show");
+        } else {
+            el.classList.remove("show");
+            el.innerHTML = "";
+        }
+    }
+
+    // Hour-space questions are judged on the hour alone — the minute value is just
+    // how far the hand has drifted through that hour.
+    function isAnswerCorrect(chosen, q) {
+        if (q.type === "hourspace") return chosen.hour === q.hour;
+        return chosen.hour === q.hour && chosen.minute === q.minute;
+    }
+
+    function markCorrect() {
+        playCorrectSound();
+        confettiBurst(10);
+        rewardPopup();
+        showMisconceptionHint(null);
+        const firstTry = !session.missedThisQuestion;
+        if (firstTry) session.correctFirstTry++;
+        registerStreak(firstTry);
+        setTimeout(nextQuestion, 1300);
+    }
+
+    function markWrong(chosen, q) {
+        session.missedThisQuestion = true;
+        playTryAgainSound();
+        registerStreak(false);
+        showMisconceptionHint(chosen && chosen.why);
+        // On an hour-hand slip, light up the hour's space so the child can see the
+        // hand is still inside the earlier hour.
+        if (chosen && chosen.why === "hourProximity") {
+            const clockEl = $("#quiz-clock");
+            if (clockEl && clockEl.querySelector(".clock-svg")) {
+                applyClockOptions(clockEl, q.hour, {
+                    hideMinuteHand: q.type === "hourspace",
+                    showHourSpace: true
+                });
+            }
+        }
+    }
+
     function handleMcqAnswer(btn, chosen, q) {
-        const correct = chosen.hour === q.hour && chosen.minute === q.minute;
         const buttons = $$("#answer-grid .answer-btn");
-        if (correct) {
+        if (isAnswerCorrect(chosen, q)) {
             buttons.forEach(b => b.disabled = true);
             btn.classList.add("correct", "bounce");
             const msg = $("#feedback-msg");
             msg.textContent = pick(ENCOURAGE_CORRECT);
             msg.classList.add("correct");
-            playCorrectSound();
-            confettiBurst(10);
-            rewardPopup();
-            const firstTry = !session.missedThisQuestion;
-            if (firstTry) session.correctFirstTry++;
-            registerStreak(firstTry);
-            setTimeout(nextQuestion, 1300);
+            markCorrect();
         } else {
-            session.missedThisQuestion = true;
             btn.classList.add("wrong", "shake");
             btn.disabled = true;
             const msg = $("#feedback-msg");
             msg.textContent = pick(ENCOURAGE_RETRY);
             msg.classList.add("wrong");
-            playTryAgainSound();
-            registerStreak(false);
+            markWrong(chosen, q);
+        }
+    }
+
+    function handleChoiceAnswer(cell, chosen, q) {
+        const cells = $$("#clock-choice-grid .clock-choice");
+        const msg = $("#feedback-msg");
+        if (isAnswerCorrect(chosen, q)) {
+            cells.forEach(c => c.disabled = true);
+            cell.classList.add("correct", "bounce");
+            msg.textContent = pick(ENCOURAGE_CORRECT);
+            msg.className = "feedback-msg correct";
+            markCorrect();
+        } else {
+            cell.classList.add("wrong", "shake");
+            cell.disabled = true;
+            msg.textContent = pick(ENCOURAGE_RETRY);
+            msg.className = "feedback-msg wrong";
+            markWrong(chosen, q);
         }
     }
 
     function handleSetAnswer(state, q) {
-        const correct = state.hour === q.hour && state.minute === q.minute;
         const msg = $("#feedback-msg");
-        if (correct) {
+        if (state.hour === q.hour && state.minute === q.minute) {
             msg.textContent = pick(ENCOURAGE_CORRECT);
             msg.className = "feedback-msg correct";
-            playCorrectSound();
-            confettiBurst(10);
-            rewardPopup();
-            const firstTry = !session.missedThisQuestion;
-            if (firstTry) session.correctFirstTry++;
-            registerStreak(firstTry);
             $("#btn-check-set").disabled = true;
-            setTimeout(nextQuestion, 1300);
+            markCorrect();
         } else {
-            session.missedThisQuestion = true;
             msg.textContent = pick(ENCOURAGE_RETRY);
             msg.className = "feedback-msg wrong shake";
-            playTryAgainSound();
-            registerStreak(false);
+            // Diagnose what they actually set, so the hint matches their slip.
+            let why = null;
+            if (state.minute === q.minute && state.hour !== q.hour) why = "hourProximity";
+            else if (q.minute === 15 && state.minute === 45) why = "quarterMixUp";
+            else if (q.minute === 45 && state.minute === 15) why = "quarterMixUp";
+            else if (Math.abs(state.minute - q.minute) === 5) why = "countOffByFive";
+            markWrong({ why }, q);
         }
     }
 

@@ -264,6 +264,75 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 }
 .hint-row { text-align: center; margin-bottom: var(--spacing-md); }
 
+/* Curriculum tag on level cards — for the grown-ups, kept quiet for the kids */
+.level-curriculum {
+    margin-top: var(--spacing-sm);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    opacity: 0.65;
+}
+
+/* "Which clock shows this time?" — pick from four faces */
+.choice-target {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: var(--spacing-md);
+}
+.clock-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    max-width: 460px;
+    margin: 0 auto;
+}
+.clock-choice {
+    background: var(--background-alt);
+    border: 3px solid transparent;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    display: flex;
+    justify-content: center;
+}
+.clock-choice .clock-wrap { width: 100%; max-width: 150px; }
+.clock-choice:hover:not(:disabled) { border-color: var(--primary-light); transform: translateY(-2px); }
+.clock-choice.correct { background: var(--success-light); border-color: var(--success); }
+.clock-choice.wrong { background: var(--try-again-light); border-color: var(--try-again); }
+.clock-choice:disabled { cursor: default; }
+
+/* Targeted hint shown after a wrong answer, matched to the specific mistake */
+.misconception-hint {
+    max-width: 460px;
+    margin: var(--spacing-sm) auto 0;
+    padding: 0 var(--spacing-md);
+    background: #FFF6E5;
+    border-left: 4px solid var(--secondary-dark);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.45;
+    text-align: left;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.misconception-hint.show {
+    max-height: 220px;
+    opacity: 1;
+    padding: var(--spacing-md);
+}
+
+/* Hour-space wedge fades in when it's used to explain a mistake */
+.hour-space { transition: opacity 0.35s ease; }
+
 /* Set-the-clock drag mode */
 .set-clock-target { text-align: center; font-size: 2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: var(--spacing-md); }
 .drag-hint { text-align: center; color: var(--text-light); margin-bottom: var(--spacing-md); }
