@@ -320,23 +320,65 @@
     }
 
     // ---------- Home / level select ----------
-    function renderBadgeShelf() {
-        const shelf = $("#badge-shelf");
-        if (!shelf) return;
-        const earned = LEVELS.filter(l => starsFor(l.id) >= 1);
-        shelf.innerHTML = `
-            <div class="badge-shelf-title">My badges <span>${earned.length}/${LEVELS.length}</span></div>
-            <div class="badge-shelf-row">
-                ${LEVELS.map(l => {
-                    const got = starsFor(l.id) >= 1;
-                    return `<div class="badge-chip ${got ? "earned" : "locked"}"
-                                 style="${got ? `--badge-color:${l.badge.color}` : ""}"
-                                 title="${got ? l.badge.name : "Not won yet"}">
-                                <span class="badge-chip-icon">${got ? l.badge.icon : "🔒"}</span>
-                                <span class="badge-chip-name">${got ? l.badge.name : "???"}</span>
-                            </div>`;
-                }).join("")}
+    // ---------- Journey map ----------
+    // Levels sit along a winding path instead of in a grid, so progress reads as a
+    // journey. Node positions live in the same coordinate space as the SVG path and
+    // are converted to percentages, so the buttons stay glued to the path at any width.
+    const MAP_W = 320, MAP_H = 800;
+    const MAP_NODES = [
+        { x: 84, y: 66 }, { x: 232, y: 172 }, { x: 86, y: 278 },
+        { x: 236, y: 384 }, { x: 84, y: 490 }, { x: 232, y: 596 },
+        { x: 160, y: 712 }
+    ];
+
+    function journeyPathD() {
+        let d = `M ${MAP_NODES[0].x} ${MAP_NODES[0].y}`;
+        for (let i = 1; i < MAP_NODES.length; i++) {
+            const a = MAP_NODES[i - 1], b = MAP_NODES[i];
+            const bend = (b.y - a.y) * 0.55;
+            d += ` C ${a.x} ${a.y + bend}, ${b.x} ${b.y - bend}, ${b.x} ${b.y}`;
+        }
+        return d;
+    }
+
+    function renderJourneyMap() {
+        const wrap = $("#journey");
+        if (!wrap) return;
+
+        const nextUp = LEVELS.find(l => isUnlocked(l.id) && starsFor(l.id) === 0);
+
+        const nodes = LEVELS.map((level, i) => {
+            const pos = MAP_NODES[i] || MAP_NODES[MAP_NODES.length - 1];
+            const unlocked = isUnlocked(level.id);
+            const stars = starsFor(level.id);
+            const isNext = nextUp && nextUp.id === level.id;
+            const label = unlocked ? level.title : "Locked";
+            return `
+                <button class="journey-node ${unlocked ? "" : "locked"} ${isNext ? "is-next" : ""}"
+                        data-level="${level.id}"
+                        style="left:${(pos.x / MAP_W) * 100}%; top:${(pos.y / MAP_H) * 100}%; --node-color:${level.badge.color}"
+                        ${unlocked ? "" : "disabled"}
+                        aria-label="${label}${unlocked ? `, ${stars} of 3 stars` : ""}">
+                    <span class="journey-disc">${unlocked ? (stars >= 1 ? level.badge.icon : level.emoji) : "🔒"}</span>
+                    <span class="journey-label">${unlocked ? level.title : "???"}</span>
+                    <span class="journey-stars">
+                        ${[1, 2, 3].map(n => `<i class="${n <= stars ? "" : "dim"}">⭐</i>`).join("")}
+                    </span>
+                </button>`;
+        }).join("");
+
+        wrap.innerHTML = `
+            <div class="journey-inner">
+                <svg class="journey-path" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+                    <path d="${journeyPathD()}" fill="none" stroke="#DCD2FA" stroke-width="16"
+                          stroke-linecap="round" stroke-dasharray="2 26"/>
+                </svg>
+                ${nodes}
             </div>`;
+
+        wrap.querySelectorAll(".journey-node:not(.locked)").forEach(btn => {
+            btn.addEventListener("click", () => enterLevel(parseInt(btn.dataset.level, 10)));
+        });
     }
 
     function resetProgress() {
@@ -352,27 +394,16 @@
 
     function renderHome() {
         updateNavStars();
-        renderBadgeShelf();
+        renderJourneyMap();
+        const badges = LEVELS.filter(l => starsFor(l.id) >= 1).length;
+        const sub = $("#home-sub");
+        if (sub) {
+            sub.textContent = badges === 0
+                ? "Start at the bottom of the path and work your way up!"
+                : `${badges} of ${LEVELS.length} badges won — keep going!`;
+        }
         const resetBtn = $("#btn-reset");
         if (resetBtn) resetBtn.onclick = resetProgress;
-        const grid = $("#level-grid");
-        grid.innerHTML = "";
-        LEVELS.forEach(level => {
-            const unlocked = isUnlocked(level.id);
-            const stars = starsFor(level.id);
-            const card = document.createElement("div");
-            card.className = "level-card" + (unlocked ? "" : " locked");
-            card.innerHTML = `
-                <div class="level-num">${unlocked ? level.emoji : "🔒"}</div>
-                <h3>${level.title}</h3>
-                <div class="level-desc">${level.desc}</div>
-                <div class="level-stars">
-                    ${[1, 2, 3].map(n => `<span class="${n <= stars ? "" : "dim"}">⭐</span>`).join("")}
-                </div>
-                ${level.curriculum ? `<div class="level-curriculum">${level.curriculum}</div>` : ""}`;
-            if (unlocked) card.addEventListener("click", () => enterLevel(level.id));
-            grid.appendChild(card);
-        });
     }
 
     // ---------- Teach screen ----------
@@ -392,7 +423,8 @@
     ];
 
     function renderTeach(level) {
-        $("#teach-title").textContent = `${level.emoji} ${level.title}`;
+        $("#teach-title").innerHTML = `${level.emoji} ${level.title}` +
+            (level.curriculum ? ` <span class="teach-year">${level.curriculum}</span>` : "");
         $("#teach-subtitle").textContent = level.teachTitle;
 
         const teachMascot = $("#teach-mascot");

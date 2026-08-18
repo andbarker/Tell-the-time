@@ -106,103 +106,92 @@ h2 { font-size: 1.7rem; }
 .hero h1 { font-size: 2.1rem; margin-bottom: var(--spacing-sm); line-height: 1.15; }
 .hero p { color: var(--ink-soft); font-size: 1.08rem; max-width: 460px; margin: 0 auto; }
 
-/* Badge shelf */
-.badge-shelf {
-    background: var(--paper);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-}
-.badge-shelf-title {
-    font-weight: 700;
-    color: var(--purple-dark);
-    margin-bottom: var(--spacing-sm);
-    display: flex; align-items: center; gap: 8px;
-    font-size: 1.05rem;
-}
-.badge-shelf-title span {
-    background: var(--purple-wash);
-    color: var(--purple-dark);
-    border-radius: 999px;
-    padding: 2px 10px;
-    font-size: 0.85rem;
-}
-.badge-shelf-row {
-    display: flex;
-    gap: var(--spacing-sm);
-    overflow-x: auto;
-    padding-bottom: 4px;
-}
-.badge-chip {
-    flex: 0 0 auto;
-    width: 84px;
-    text-align: center;
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-sm) 4px;
-}
-.badge-chip-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 48px; height: 48px;
-    margin: 0 auto 4px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-}
-.badge-chip.earned .badge-chip-icon {
-    background: var(--badge-color, var(--purple));
-    box-shadow: 0 3px 0 rgba(59, 46, 90, 0.22);
-}
-.badge-chip.locked .badge-chip-icon { background: #E7E1F5; filter: grayscale(1); opacity: 0.7; }
-.badge-chip-name {
-    display: block;
-    font-size: 0.68rem;
-    font-weight: 600;
-    line-height: 1.2;
-    color: var(--ink-soft);
-}
-.badge-chip.locked .badge-chip-name { opacity: 0.6; }
-
-/* Level grid */
-.level-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-}
-.level-card {
-    background: var(--paper);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: var(--spacing-lg) var(--spacing-md);
-    text-align: center;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: var(--transition);
+/* Journey map — levels along a winding path */
+.journey { margin-top: var(--spacing-lg); }
+.journey-inner {
     position: relative;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    /* matches the SVG's 320x800 coordinate space so nodes sit on the path */
+    aspect-ratio: 320 / 800;
 }
-.level-card.locked { opacity: 0.6; cursor: not-allowed; }
-.level-card .level-num {
-    width: 62px; height: 62px; border-radius: 50%;
-    background: var(--purple); color: white;
+.journey-path { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.journey-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 96px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+.journey-disc {
+    width: 66px; height: 66px;
+    border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.9rem;
-    margin: 0 auto var(--spacing-sm);
-    box-shadow: 0 4px 0 rgba(59, 46, 90, 0.20);
+    background: var(--node-color, var(--purple));
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 5px 0 rgba(59, 46, 90, 0.22);
+    transition: var(--transition);
 }
-.level-card.locked .level-num { background: #C9C1DE; box-shadow: none; }
-.level-card h3 { font-size: 1.2rem; margin: 0 0 4px; }
-.level-card .level-desc { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: var(--spacing-sm); }
-.level-stars { display: flex; justify-content: center; gap: 4px; font-size: 1.35rem; }
-.level-stars .dim { opacity: 0.22; filter: grayscale(1); }
+/* Backdrop keeps the label readable where it crosses the dotted path */
+.journey-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.15;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+.journey-stars {
+    display: flex; gap: 1px;
+    font-size: 0.72rem; font-style: normal;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 1px 7px;
+}
+.journey-stars .dim { opacity: 0.22; filter: grayscale(1); }
 
-.level-curriculum {
-    margin-top: var(--spacing-sm);
-    font-size: 0.66rem;
+/* Curriculum year, kept for the grown-ups rather than the kids */
+.teach-year {
+    display: inline-block;
+    vertical-align: middle;
+    background: var(--purple-wash);
+    color: var(--ink-soft);
+    font-size: 0.6rem;
     font-weight: 600;
     letter-spacing: 0.6px;
     text-transform: uppercase;
-    color: var(--ink-soft);
-    opacity: 0.55;
+    border-radius: 999px;
+    padding: 3px 9px;
+    margin-left: 6px;
+}
+
+.journey-node.locked { cursor: not-allowed; }
+.journey-node.locked .journey-disc {
+    background: #D6CEEA;
+    box-shadow: none;
+    filter: grayscale(0.4);
+}
+.journey-node.locked .journey-label { color: var(--ink-soft); opacity: 0.7; }
+/* No point showing an empty star row on a level that can't be played yet */
+.journey-node.locked .journey-stars { display: none; }
+
+/* The level to play next gently pulses so there's an obvious place to start */
+.journey-node.is-next .journey-disc { animation: nodePulse 1.8s ease-in-out infinite; }
+@keyframes nodePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 5px 0 rgba(59, 46, 90, 0.22); }
+    50% { transform: scale(1.09); box-shadow: 0 5px 0 rgba(59, 46, 90, 0.22), 0 0 0 10px rgba(124, 77, 255, 0.14); }
 }
 
 /* Reset */
@@ -606,7 +595,7 @@ body:not([data-screen="screen-home"]) footer { display: none; }
    :hover stuck on the element, which made the previous question's button look
    selected on the next one. */
 @media (hover: hover) and (pointer: fine) {
-    .level-card:hover:not(.locked) { transform: translateY(-6px) rotate(-1deg); box-shadow: var(--shadow-lift); border-color: var(--purple-light); }
+    .journey-node:not(.locked):hover .journey-disc { transform: scale(1.1) rotate(-4deg); }
     .btn-primary:hover { background: var(--purple-dark); }
     .btn-secondary:hover { background: var(--sun-dark); }
     .btn-outline:hover { background: var(--purple-wash); }
@@ -614,7 +603,6 @@ body:not([data-screen="screen-home"]) footer { display: none; }
     .back-link:hover { background: var(--purple-light); color: white; }
     .answer-btn:hover:not(:disabled) { border-color: var(--purple-light); transform: translateY(-2px); }
     .clock-choice:hover:not(:disabled) { border-color: var(--purple-light); transform: translateY(-2px); }
-    .badge-chip.earned:hover { transform: translateY(-3px); }
 }
 
 /* Keyboard users still get a visible focus ring; mouse/touch taps don't keep one. */
@@ -681,6 +669,7 @@ body:not([data-screen="screen-home"]) footer { display: none; }
     .badge-won-disc { width: 92px; height: 92px; font-size: 2.7rem; }
     .complete-stars { font-size: 2.4rem; margin: var(--spacing-sm) 0; }
     .complete-screen { padding: var(--spacing-md) var(--spacing-sm); }
-    .badge-shelf { padding: var(--spacing-sm) var(--spacing-md); margin-top: var(--spacing-md); }
-    .level-grid { gap: var(--spacing-md); margin-top: var(--spacing-md); }
+    .journey { margin-top: var(--spacing-md); }
+    .journey-disc { width: 58px; height: 58px; font-size: 1.6rem; }
+    .journey-node { width: 88px; }
 }
