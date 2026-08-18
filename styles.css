@@ -170,7 +170,7 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 
 /* Learn screen */
 .teach-example { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--spacing-xl); margin: var(--spacing-lg) 0; }
-.teach-clock-wrap .clock-wrap { width: 220px; }
+.teach-clock-wrap .clock-wrap { width: 260px; }
 .teach-text { max-width: 380px; font-size: 1.15rem; }
 .teach-text p { margin-bottom: var(--spacing-md); }
 .teach-text .rule { background: var(--background-alt); border-left: 4px solid var(--primary); padding: var(--spacing-md); border-radius: var(--border-radius); font-weight: 600; }
@@ -192,7 +192,7 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
 
 .quiz-question { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: var(--spacing-md); }
 .clock-stage { display: flex; justify-content: center; margin: var(--spacing-lg) 0; position: relative; }
-.clock-wrap { width: 260px; }
+.clock-wrap { width: 300px; }
 
 /* Reward pop-up — a little emoji that flies up over the clock on a correct answer */
 .reward-pop {
@@ -262,6 +262,7 @@ h2 { font-size: 1.8rem; letter-spacing: -0.5px; }
     border: 2px solid var(--primary-light);
     box-shadow: none;
 }
+.hint-row { text-align: center; margin-bottom: var(--spacing-md); }
 
 /* Set-the-clock drag mode */
 .set-clock-target { text-align: center; font-size: 2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: var(--spacing-md); }
@@ -337,23 +338,25 @@ body:not([data-screen="screen-home"]) footer { display: none; }
    so phone-sized screens fit without scrolling */
 @media (max-width: 600px), (max-height: 700px) {
     body { font-size: 16px; }
-    .container { padding: var(--spacing-sm) var(--spacing-md); }
-    .panel { padding: var(--spacing-sm) var(--spacing-md); margin-top: var(--spacing-sm); }
-    .panel-header { margin-bottom: var(--spacing-sm); }
-    h2 { font-size: 1.3rem; }
-    .clock-wrap { width: clamp(130px, min(40vw, 24vh), 210px); }
-    .teach-clock-wrap .clock-wrap { width: clamp(110px, min(34vw, 20vh), 180px); }
-    .teach-example { flex-direction: column; gap: var(--spacing-sm); margin: var(--spacing-sm) 0; }
-    #teach-subtitle { margin-bottom: var(--spacing-xs) !important; font-size: 0.95rem !important; }
-    .teach-text { font-size: 0.92rem; }
-    .teach-text p { margin-bottom: 6px; }
-    .teach-text .rule { padding: var(--spacing-sm); }
-    .answer-grid { grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
-    .answer-btn { font-size: 1.1rem; padding: 10px; }
-    .clock-stage { margin: var(--spacing-sm) 0; }
-    .progress-bar-track { margin-bottom: var(--spacing-sm); }
-    .quiz-question { font-size: 1.1rem; margin-bottom: var(--spacing-xs); }
-    .feedback-msg { margin-top: var(--spacing-sm); font-size: 1.1rem; }
-    .btn-row { margin-top: var(--spacing-sm); gap: var(--spacing-sm); }
-    .btn { padding: 12px 20px; font-size: 1rem; }
+    .navbar-container { padding: var(--spacing-sm) var(--spacing-lg); }
+    .container { padding: var(--spacing-xs) var(--spacing-md); }
+    .panel { padding: var(--spacing-xs) var(--spacing-md); margin-top: var(--spacing-xs); }
+    .panel-header { margin-bottom: var(--spacing-xs); }
+    h2 { font-size: 1.25rem; }
+    .clock-wrap { width: clamp(150px, min(48vw, 32vh), 260px); }
+    .teach-clock-wrap .clock-wrap { width: clamp(130px, min(42vw, 27vh), 230px); }
+    .teach-example { flex-direction: column; gap: var(--spacing-xs); margin: var(--spacing-xs) 0; }
+    #teach-subtitle { margin-bottom: var(--spacing-xs) !important; font-size: 0.9rem !important; }
+    .teach-text { font-size: 0.88rem; }
+    .teach-text p { margin-bottom: 4px; }
+    .teach-text .rule { padding: 6px var(--spacing-sm); }
+    .hint-row { margin-bottom: var(--spacing-xs); }
+    .answer-grid { grid-template-columns: 1fr 1fr; gap: var(--spacing-xs); }
+    .answer-btn { font-size: 1.05rem; padding: 8px; }
+    .clock-stage { margin: var(--spacing-xs) 0; }
+    .progress-bar-track { margin-bottom: var(--spacing-xs); }
+    .quiz-question { font-size: 1.05rem; margin-bottom: var(--spacing-xs); }
+    .feedback-msg { margin-top: var(--spacing-xs); font-size: 1.05rem; }
+    .btn-row { margin-top: var(--spacing-xs); gap: var(--spacing-sm); }
+    .btn { padding: 10px 18px; font-size: 1rem; }
 }
