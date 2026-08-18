@@ -117,11 +117,27 @@
     function loadProgress() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) return JSON.parse(raw);
+            if (raw) return migrateProgress(JSON.parse(raw));
         } catch (e) { /* ignore */ }
-        return { levels: {}, totalStars: 0, seenTeach: {} };
+        return { levels: {}, totalStars: 0, seenTeach: {}, schema: 2 };
+    }
+
+    // "Just the Hour Hand" was inserted at the front of the level list, so every
+    // level saved before that shifted up by one. Without this, stars earned on the
+    // old O'Clock level would show against the new hour-hand level, and so on.
+    function migrateProgress(saved) {
+        if (!saved || saved.schema >= 2) return saved;
+        const shifted = {};
+        Object.keys(saved.levels || {}).forEach(oldId => {
+            const n = parseInt(oldId, 10);
+            if (!isNaN(n)) shifted[n + 1] = saved.levels[oldId];
+        });
+        // The new first level covers ground they had already passed, so credit it.
+        if (Object.keys(shifted).length) shifted[1] = shifted[1] || { stars: 3 };
+        return { ...saved, levels: shifted, schema: 2 };
     }
     function saveProgress() {
+        progress.schema = 2;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
     }
 
