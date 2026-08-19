@@ -38,6 +38,9 @@
             id: 3, emoji: "🕡", title: "Half Past", desc: "Halfway there!",
             badge: { icon: "🌗", name: "Half Past Hero", color: "#0EA5E9" },
             minuteSet: [0, 30], curriculum: "Year 1",
+            // Mostly half past, with o'clock kept in as review — drawing evenly from
+            // the legal set would make half the questions o'clock ones.
+            targetWeights: [30, 30, 30, 0],
             teachTitle: "Half past means halfway round! 🕡",
             teachHour: 3, teachMinute: 30,
             teachPoints: [
@@ -50,9 +53,11 @@
             id: 4, emoji: "🕒", title: "Quarter Past & To", desc: "Say it with words!",
             badge: { icon: "🍕", name: "Quarter Champ", color: "#EC4899" },
             minuteSet: [0, 15, 30, 45], curriculum: "Year 2",
+            // Mostly quarters, with o'clock and half past kept in as light review.
+            targetWeights: [15, 15, 15, 45, 45, 45, 0, 30],
             // Ease in: the first few questions leave out quarter-to, which is the
-            // part children get stuck on, so they build confidence first.
-            scaffoldEarly: { count: 3, minuteSet: [0, 15, 30] },
+            // part children get stuck on — but they're still quarter questions.
+            scaffoldEarly: { count: 3, targetWeights: [15, 15, 15, 15, 0, 30] },
             teachTitle: "Quarter past and quarter to! 🕒",
             teachHour: 3, teachMinute: 15,
             teachPoints: [
@@ -520,16 +525,28 @@
 
     function generateTime(level, type, index) {
         let minuteSet = level.minuteSet;
+        let inherited = null;
+        if (minuteSet === "mixed") {
+            // Time Master: sample from a random earlier level, taking that level's
+            // weighting too so the mix stays representative of what it taught.
+            const pool = LEVELS.filter(l => !l.hourHandOnly && l.minuteSet !== "mixed");
+            const chosen = pick(pool);
+            minuteSet = chosen.minuteSet;
+            inherited = chosen.targetWeights || null;
+        }
+
+        // The set of *legal* minutes (minuteSet) and the pool a question is actually
+        // drawn from are different things. Drawing uniformly from the legal set meant
+        // a level called "Quarter Past & To" served questions with no quarter in them
+        // at all. targetWeights lets a level make its own subject the common case,
+        // with repeats standing in for weighting.
+        let targetPool = inherited || level.targetWeights || minuteSet;
         // Scaffolded levels hold back their hardest minutes for the first few
         // questions, so the child gets a run of wins before the tricky part.
         if (level.scaffoldEarly && index < level.scaffoldEarly.count) {
-            minuteSet = level.scaffoldEarly.minuteSet;
+            targetPool = level.scaffoldEarly.targetWeights;
         }
-        if (minuteSet === "mixed") {
-            // Time Master: sample from a random earlier level's minute set for variety
-            const pool = LEVELS.filter(l => !l.hourHandOnly && l.minuteSet !== "mixed");
-            minuteSet = pick(pool).minuteSet;
-        }
+
         const hour = randInt(1, 12);
         if (type === "hourspace") {
             // Drift the hour hand through its hour. Late positions are the ones
@@ -543,8 +560,9 @@
         // the clock stay on the 5-minute marks.
         if ((type === "set" || type === "setWords") && minuteSet.length > 12) {
             minuteSet = FIVE_MINUTE_MARKS;
+            targetPool = FIVE_MINUTE_MARKS;
         }
-        return { hour, minute: pick(minuteSet), minuteSet };
+        return { hour, minute: pick(targetPool), minuteSet };
     }
 
     // Distractors built from documented clock-reading errors rather than at random.
