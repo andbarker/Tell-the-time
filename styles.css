@@ -34,6 +34,14 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+/* Without this, iOS reads two quick taps on a control as a double-tap-to-zoom —
+   which is exactly what happens when a child pounds the hour arrows. Scoped to
+   controls so pinch-to-zoom still works everywhere else. */
+button, .btn, .answer-btn, .clock-choice, .journey-node,
+.sound-btn, .btn-reset, .back-link {
+    touch-action: manipulation;
+}
+
 body {
     font-family: var(--font-family);
     color: var(--ink);
@@ -273,6 +281,15 @@ h2 { font-size: 1.7rem; }
     font-weight: 600;
 }
 
+/* Second worked example on the lesson screen (quarter-to gets its own) */
+.teach-extra {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 3px dashed #E2D9F8;
+}
+.teach-extra h3 { font-size: 1.15rem; margin-bottom: var(--spacing-xs); }
+.to-arc { transition: opacity 0.35s ease; }
+
 /* Practice / quiz */
 .progress-bar-track {
     background: #E7E1F5;
@@ -338,6 +355,19 @@ h2 { font-size: 1.7rem; }
     box-shadow: 0 4px 0 rgba(59, 46, 90, 0.10);
 }
 .answer-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+
+/* Words lead, digits follow — the child reads the wording they know and picks up
+   the digital form alongside it. */
+.t-words { display: block; line-height: 1.15; }
+.t-digits {
+    display: block;
+    font-size: 0.78em;
+    font-weight: 500;
+    opacity: 0.62;
+    margin-top: 2px;
+}
+.choice-target .t-words, .set-clock-target .t-words { line-height: 1.1; }
+.choice-target .t-digits, .set-clock-target .t-digits { font-size: 0.6em; }
 .answer-btn.correct { background: var(--green-wash); border-color: var(--green); color: #1B7F4B; box-shadow: 0 4px 0 var(--green); }
 .answer-btn.wrong { background: var(--coral-wash); border-color: var(--coral); color: var(--coral); box-shadow: 0 4px 0 var(--coral); }
 .answer-btn:disabled { cursor: default; }

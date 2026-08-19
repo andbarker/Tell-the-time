@@ -50,13 +50,28 @@
             id: 4, emoji: "🕒", title: "Quarter Past & To", desc: "Say it with words!",
             badge: { icon: "🍕", name: "Quarter Champ", color: "#EC4899" },
             minuteSet: [0, 15, 30, 45], curriculum: "Year 2",
+            // Ease in: the first few questions leave out quarter-to, which is the
+            // part children get stuck on, so they build confidence first.
+            scaffoldEarly: { count: 3, minuteSet: [0, 15, 30] },
             teachTitle: "Quarter past and quarter to! 🕒",
             teachHour: 3, teachMinute: 15,
             teachPoints: [
-                "Minute hand on the <b>3</b>? That's <b>quarter past</b> — 15 minutes.",
-                "Minute hand on the <b>9</b>? Now we count <b>to</b> the next hour: <b>quarter to</b>!",
-                "This clock says <b>quarter past 3</b>, and we write it 3:15."
-            ]
+                "The clock is like a pizza cut into 4 quarters! 🍕",
+                "The minute hand on the <b>3</b> has gone <b>one quarter</b> of the way round — that's 15 minutes.",
+                "We say <b>quarter past 3</b>, and we write it 3:15."
+            ],
+            // Quarter-to is the sticking point, so it gets its own worked example
+            // with the "minutes still to go" arc drawn on the clock.
+            teachExtra: {
+                hour: 7, minute: 45, showToArc: true,
+                title: "Now the tricky one — quarter TO! 🤔",
+                points: [
+                    "Once the minute hand goes <b>past the 6</b>, we stop counting <b>past</b> and start counting <b>to</b>.",
+                    "The blue arc shows the minutes <b>still to go</b> — just 15 left, one quarter of the way round.",
+                    "Here's the sneaky bit: we name the hour we're heading <b>to</b>, not the one we're in. The short hand is nearly at the <b>8</b>&hellip;",
+                    "&hellip;so this is <b>quarter to 8</b> — even though it's written <b>7:45</b>!"
+                ]
+            }
         },
         {
             id: 5, emoji: "🕔", title: "Five Minutes", desc: "Count by 5s!",
@@ -103,7 +118,7 @@
         handSwap: "Careful — check which hand is which. The <b>short</b> hand is the hour, the <b>long</b> one is the minutes.",
         minuteAsNumber: "The minute hand points at a number, but that's not the minutes! Count in <b>5s</b> from the 12.",
         countOffByFive: "So close! Count the 5s around from the 12 again — you're one number out.",
-        quarterMixUp: "Watch out for <b>past</b> and <b>to</b>! After the 6, we count <b>to</b> the next hour."
+        quarterMixUp: "Past the 6, we count the minutes <b>still to go</b> — that's the blue arc. And we name the hour we're heading <b>to</b>, which is the <b>next</b> one, not the one the short hand just left."
     };
 
     const ENCOURAGE_CORRECT = [
@@ -457,6 +472,21 @@
             showHourSpace: !!level.teachShowHourSpace
         });
         $("#teach-points").innerHTML = level.teachPoints.map(p => `<p>👉 ${p}</p>`).join("");
+
+        const extraWrap = $("#teach-extra");
+        if (level.teachExtra) {
+            const ex = level.teachExtra;
+            extraWrap.style.display = "";
+            $("#teach-extra-title").textContent = ex.title;
+            $("#teach-extra-points").innerHTML = ex.points.map(p => `<p>👉 ${p}</p>`).join("");
+            const clock2 = $("#teach-clock-2");
+            clock2.innerHTML = "";
+            renderClock(clock2, ex.hour, ex.minute, {
+                showToArc: ex.showToArc ? { minute: ex.minute } : null
+            });
+        } else {
+            extraWrap.style.display = "none";
+        }
         $("#teach-digital").textContent = level.hourHandOnly
             ? formatWords(level.teachHour, 0)
             : `${formatWords(level.teachHour, level.teachMinute)} (${formatDigital(level.teachHour, level.teachMinute)})`;
@@ -485,11 +515,16 @@
     function buildQuestionList(levelId) {
         const level = LEVELS.find(l => l.id === levelId);
         const types = shuffle(questionMixFor(level));
-        return types.map(type => ({ type, ...generateTime(level, type) }));
+        return types.map((type, i) => ({ type, ...generateTime(level, type, i) }));
     }
 
-    function generateTime(level, type) {
+    function generateTime(level, type, index) {
         let minuteSet = level.minuteSet;
+        // Scaffolded levels hold back their hardest minutes for the first few
+        // questions, so the child gets a run of wins before the tricky part.
+        if (level.scaffoldEarly && index < level.scaffoldEarly.count) {
+            minuteSet = level.scaffoldEarly.minuteSet;
+        }
         if (minuteSet === "mixed") {
             // Time Master: sample from a random earlier level's minute set for variety
             const pool = LEVELS.filter(l => !l.hourHandOnly && l.minuteSet !== "mixed");
@@ -653,7 +688,7 @@
             // Reverse direction: given a time, pick the clock that shows it.
             showArea("choice");
             $("#quiz-question").textContent = "Which clock shows this time?";
-            $("#choice-target").textContent = label(q.hour, q.minute);
+            $("#choice-target").innerHTML = formatPairedHTML(q.hour, q.minute);
 
             const distractors = generateDistractors(q.hour, q.minute, q.minuteSet);
             const options = shuffle([{ hour: q.hour, minute: q.minute, why: null }, ...distractors]);
@@ -682,7 +717,7 @@
         } else {
             showArea("set");
             $("#quiz-question").textContent = "Set the clock to match!";
-            $("#set-target").textContent = label(q.hour, q.minute);
+            $("#set-target").innerHTML = formatPairedHTML(q.hour, q.minute);
 
             // The hand always snaps to the 5-minute marks while dragging, whatever the
             // level allows as an answer. Snapping to the level's own set would leave
@@ -716,9 +751,11 @@
         options.forEach(opt => {
             const btn = document.createElement("button");
             btn.className = "answer-btn";
-            btn.textContent = customLabel
-                ? customLabel(opt.hour)
-                : (useWords ? formatWords(opt.hour, opt.minute) : formatDigital(opt.hour, opt.minute));
+            if (customLabel) {
+                btn.textContent = customLabel(opt.hour);
+            } else {
+                btn.innerHTML = formatPairedHTML(opt.hour, opt.minute);
+            }
             btn.addEventListener("click", () => handleMcqAnswer(btn, opt, q));
             answerGrid.appendChild(btn);
         });
@@ -767,16 +804,19 @@
         flashMascotMood($("#quiz-mascot"), "oops", "thinking", 1400);
         registerStreak(false);
         showMisconceptionHint(chosen && chosen.why);
-        // On an hour-hand slip, light up the hour's space so the child can see the
-        // hand is still inside the earlier hour.
-        if (chosen && chosen.why === "hourProximity") {
-            const clockEl = $("#quiz-clock");
-            if (clockEl && clockEl.querySelector(".clock-svg")) {
-                applyClockOptions(clockEl, q.hour, {
-                    hideMinuteHand: q.type === "hourspace",
-                    showHourSpace: true
-                });
-            }
+
+        // Draw the explanation onto the clock itself, not just in words.
+        const clockEl = $("#quiz-clock");
+        if (!chosen || !clockEl || !clockEl.querySelector(".clock-svg")) return;
+        if (chosen.why === "hourProximity") {
+            // Light the hour's space so they can see the hand is still in it.
+            applyClockOptions(clockEl, q.hour, {
+                hideMinuteHand: q.type === "hourspace",
+                showHourSpace: true
+            });
+        } else if (chosen.why === "quarterMixUp" || (q.minute > 30 && chosen.minute <= 30)) {
+            // Show the minutes still to go, which is what "to" is counting.
+            applyClockOptions(clockEl, q.hour, { showToArc: { minute: q.minute } });
         }
     }
 

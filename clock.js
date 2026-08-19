@@ -51,6 +51,8 @@ function clockFaceSVG() {
         <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R + 2}" fill="#FFF9EC"/>
         <circle cx="${CLOCK_CX}" cy="${CLOCK_CY}" r="${CLOCK_R}" fill="#FFFFFF"/>
         <path class="hour-space" d="" fill="#8ED9A0" opacity="0"/>
+        <path class="to-arc" d="" fill="none" stroke="#38BDF8" stroke-width="9"
+              stroke-linecap="round" opacity="0"/>
         ${ticks}
         ${numbers}
         <path class="hour-hand" d="${hourHand}" fill="#E5484D" stroke="#B4262B" stroke-width="2" stroke-linejoin="round" transform="rotate(0 ${CLOCK_CX} ${CLOCK_CY})"/>
@@ -82,7 +84,26 @@ function hourSpacePath(hour) {
     return `M ${CLOCK_CX} ${CLOCK_CY} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
 }
 
-// opts: { hideMinuteHand, showHourSpace }
+// Arc from where the minute hand is, round to the 12 — the minutes still "to go"
+// before the next hour. This is what makes "quarter TO eight" make sense: you can
+// see the 15 minutes left, and that the hour hand is nearly at the 8.
+function minutesToGoPath(minute) {
+    const r = CLOCK_R - 9;
+    const startDeg = minute * 6;
+    const point = (deg) => {
+        const rad = deg * Math.PI / 180;
+        return [
+            (CLOCK_CX + r * Math.sin(rad)).toFixed(1),
+            (CLOCK_CY - r * Math.cos(rad)).toFixed(1)
+        ];
+    };
+    const [x1, y1] = point(startDeg);
+    const [x2, y2] = point(359.99);
+    const largeArc = (360 - startDeg) > 180 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
+}
+
+// opts: { hideMinuteHand, showHourSpace, showToArc }
 function applyClockOptions(container, hour, opts = {}) {
     const svg = container.querySelector(".clock-svg");
     if (!svg) return;
@@ -97,6 +118,15 @@ function applyClockOptions(container, hour, opts = {}) {
             space.style.opacity = "1";
         } else {
             space.style.opacity = "0";
+        }
+    }
+    const toArc = svg.querySelector(".to-arc");
+    if (toArc) {
+        if (opts.showToArc && opts.showToArc.minute != null) {
+            toArc.setAttribute("d", minutesToGoPath(opts.showToArc.minute));
+            toArc.style.opacity = "1";
+        } else {
+            toArc.style.opacity = "0";
         }
     }
 }
@@ -200,6 +230,14 @@ function makeClockDraggable(container, getHour, onMinuteChange, allowedMinuteSet
 function formatDigital(hour, minute) {
     const h12 = ((hour % 12) === 0) ? 12 : (hour % 12);
     return `${h12}:${String(minute).padStart(2, "0")}`;
+}
+
+// Every time is shown both ways, words first. A child still learning to read a
+// clock hasn't met digital time yet, so the wording leads and the digits sit
+// underneath — which also builds the analogue/digital link the curriculum wants.
+function formatPairedHTML(hour, minute) {
+    return `<span class="t-words">${formatWords(hour, minute)}</span>` +
+           `<span class="t-digits">${formatDigital(hour, minute)}</span>`;
 }
 
 // "Past / to" wording — the language the Year 2 curriculum asks children to use.
