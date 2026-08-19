@@ -562,13 +562,13 @@
             minuteSet = FIVE_MINUTE_MARKS;
             targetPool = FIVE_MINUTE_MARKS;
         }
-        return { hour, minute: pick(targetPool), minuteSet };
+        return { hour, minute: pick(targetPool), minuteSet, targetPool };
     }
 
     // Distractors built from documented clock-reading errors rather than at random.
     // Each carries the misconception it represents so a wrong tap can be answered
     // with a hint aimed at that specific confusion.
-    function generateDistractors(hour, minute, minuteSet, count = 3) {
+    function generateDistractors(hour, minute, minuteSet, count = 3, targetPool) {
         const norm = (h) => ((h - 1 + 12) % 12) + 1;
         const seen = new Set([`${hour}:${minute}`]);
         const candidates = [];
@@ -611,15 +611,39 @@
         const results = pool.slice(0, count);
 
         // Top up with plausible random times if the misconception set came up short.
+        // Fill from the level's own weighted pool, not evenly across every legal
+        // minute. Otherwise a half-past question ends up with three o'clock options
+        // and the child can pick the odd one out without reading the clock at all.
+        const fillPool = targetPool || minuteSet;
         let guard = 0;
         while (results.length < count && guard++ < 200) {
-            const h = randInt(1, 12), m = pick(minuteSet);
+            const h = randInt(1, 12), m = pick(fillPool);
             const key = `${h}:${m}`;
             if (seen.has(key)) continue;
             seen.add(key);
             results.push({ hour: h, minute: m, why: null });
         }
         return results;
+    }
+
+    // Faded scaffolding for the quarters, which is where children get stuck. The
+    // first quarter question of each kind is shown with the arc drawn and the rule
+    // spelled out; the second keeps the arc but drops the words; after that the
+    // child is on their own. Support that never fades isn't teaching, it's a crutch.
+    const QUARTER_COACH = {
+        15: "See the <b>green arc</b>? That's 15 minutes <b>gone</b> since the hour — one quarter of the way round. So we say <b>quarter past</b>.",
+        45: "See the <b>blue arc</b>? That's 15 minutes <b>still to go</b> — so we count <b>to</b> the next hour, and name the hour the short hand is heading for."
+    };
+
+    function coachLevelFor(minute) {
+        if (!session || (minute !== 15 && minute !== 45)) return 0;
+        const seen = session.coachSeen[minute] || 0;
+        return seen === 0 ? 2 : (seen === 1 ? 1 : 0); // 2 = arc + words, 1 = arc, 0 = none
+    }
+
+    function noteCoachShown(minute) {
+        if (!session || (minute !== 15 && minute !== 45)) return;
+        session.coachSeen[minute] = (session.coachSeen[minute] || 0) + 1;
     }
 
     function startPractice(levelId) {
@@ -629,7 +653,8 @@
             index: 0,
             correctFirstTry: 0,
             missedThisQuestion: false,
-            streak: 0
+            streak: 0,
+            coachSeen: {}
         };
         updateStreakBadge();
         renderMascot($("#quiz-mascot"), "idle");
@@ -688,6 +713,29 @@
             || (q.type === "whichClock" && level.curriculum === "Year 2");
         const label = (h, m) => isWords ? formatWords(h, m) : formatDigital(h, m);
 
+        // Decide what quarter support this question gets, and say so on screen.
+        // Only for questions where the child is reading a single clock.
+        const coachable = q.type === "mcqWords" || q.type === "mcqDigital";
+        const coach = coachable ? coachLevelFor(q.minute) : 0;
+        if (coach > 0) noteCoachShown(q.minute);
+        const coachOpts = coach > 0
+            ? (q.minute === 45 ? { showToArc: { minute: q.minute } }
+                               : { showPastArc: { minute: q.minute } })
+            : {};
+        const coachBar = $("#coach-bar");
+        const practiceScreen = $("#screen-practice");
+        if (coach === 2) {
+            coachBar.innerHTML = `🧑‍🏫 ${QUARTER_COACH[q.minute]}`;
+            coachBar.classList.add("show");
+            // The explanation costs a chunk of height, so give some back from the
+            // clock — otherwise the answers get pushed below the fold.
+            practiceScreen.classList.add("coaching");
+        } else {
+            coachBar.classList.remove("show");
+            coachBar.innerHTML = "";
+            practiceScreen.classList.remove("coaching");
+        }
+
         if (q.type === "hourspace") {
             // One-handed clock: which hour's space is the hand in?
             showArea("mcq");
@@ -708,7 +756,7 @@
             $("#quiz-question").textContent = "Which clock shows this time?";
             $("#choice-target").innerHTML = formatPairedHTML(q.hour, q.minute);
 
-            const distractors = generateDistractors(q.hour, q.minute, q.minuteSet);
+            const distractors = generateDistractors(q.hour, q.minute, q.minuteSet, 3, q.targetPool);
             const options = shuffle([{ hour: q.hour, minute: q.minute, why: null }, ...distractors]);
             const grid = $("#clock-choice-grid");
             grid.innerHTML = "";
@@ -726,9 +774,9 @@
         } else if (q.type === "mcqWords" || q.type === "mcqDigital") {
             showArea("mcq");
             $("#quiz-question").textContent = isWords ? "How do we say this time?" : "What time is it?";
-            renderClock(clockEl, q.hour, q.minute);
+            renderClock(clockEl, q.hour, q.minute, coachOpts);
 
-            const distractors = generateDistractors(q.hour, q.minute, q.minuteSet);
+            const distractors = generateDistractors(q.hour, q.minute, q.minuteSet, 3, q.targetPool);
             const options = shuffle([{ hour: q.hour, minute: q.minute, why: null }, ...distractors]);
             buildAnswerButtons(options, q, null, isWords);
 

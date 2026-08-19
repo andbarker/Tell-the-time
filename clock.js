@@ -84,12 +84,10 @@ function hourSpacePath(hour) {
     return `M ${CLOCK_CX} ${CLOCK_CY} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
 }
 
-// Arc from where the minute hand is, round to the 12 — the minutes still "to go"
-// before the next hour. This is what makes "quarter TO eight" make sense: you can
-// see the 15 minutes left, and that the hour hand is nearly at the 8.
-function minutesToGoPath(minute) {
+// An arc round the rim between two angles, used to make "past" and "to" visible:
+// how far the minute hand has come, or how far it still has to go.
+function rimArcPath(fromDeg, toDeg) {
     const r = CLOCK_R - 9;
-    const startDeg = minute * 6;
     const point = (deg) => {
         const rad = deg * Math.PI / 180;
         return [
@@ -97,10 +95,20 @@ function minutesToGoPath(minute) {
             (CLOCK_CY - r * Math.cos(rad)).toFixed(1)
         ];
     };
-    const [x1, y1] = point(startDeg);
-    const [x2, y2] = point(359.99);
-    const largeArc = (360 - startDeg) > 180 ? 1 : 0;
+    const [x1, y1] = point(fromDeg);
+    const [x2, y2] = point(toDeg);
+    const largeArc = (toDeg - fromDeg) > 180 ? 1 : 0;
     return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
+}
+
+// Minutes still to go before the next hour — what "quarter TO eight" counts.
+function minutesToGoPath(minute) {
+    return rimArcPath(minute * 6, 359.99);
+}
+
+// Minutes gone since the hour — what "quarter PAST seven" counts.
+function minutesPastPath(minute) {
+    return rimArcPath(0.01, minute * 6);
 }
 
 // opts: { hideMinuteHand, showHourSpace, showToArc }
@@ -124,6 +132,11 @@ function applyClockOptions(container, hour, opts = {}) {
     if (toArc) {
         if (opts.showToArc && opts.showToArc.minute != null) {
             toArc.setAttribute("d", minutesToGoPath(opts.showToArc.minute));
+            toArc.setAttribute("stroke", "#38BDF8");
+            toArc.style.opacity = "1";
+        } else if (opts.showPastArc && opts.showPastArc.minute != null) {
+            toArc.setAttribute("d", minutesPastPath(opts.showPastArc.minute));
+            toArc.setAttribute("stroke", "#2FBF71");
             toArc.style.opacity = "1";
         } else {
             toArc.style.opacity = "0";

@@ -281,6 +281,33 @@ h2 { font-size: 1.7rem; }
     font-weight: 600;
 }
 
+/* Faded teaching support on quarter questions */
+.coach-bar {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    background: #EAF7FF;
+    border-left: 5px solid var(--sky);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: left;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.coach-bar.show {
+    max-height: 220px;
+    opacity: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+/* Make room for the explanation without pushing the answers off screen */
+#screen-practice.coaching .clock-wrap { width: min(250px, 58vw, 26vh); }
+#screen-practice.coaching .clock-stage { margin: var(--spacing-xs) 0; }
+
 /* Second worked example on the lesson screen (quarter-to gets its own) */
 .teach-extra {
     margin-top: var(--spacing-md);
